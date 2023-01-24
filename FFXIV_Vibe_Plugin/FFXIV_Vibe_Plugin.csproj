@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors></Authors>
-    <Company></Company>
-    <Version>0.0.0.1</Version>
-    <Description>A sample plugin.</Description>
-    <Copyright></Copyright>
-    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
+    <Authors>KacieXX</Authors>
+    <Company>Karsian</Company>
+    <Version>1.7.0.1</Version>
+    <Description>A plugin to help you vibe your controller or toys</Description>
+    <Copyright>kacieXX 2023</Copyright>
+    <PackageProjectUrl>https://github.com/kaciexx/FFXIV_Vibe_Plugin</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -21,9 +21,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\Data\logo.png">
+    <Content Include="..\images\icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
+      <Visible>true</Visible>
     </Content>
   </ItemGroup>
 

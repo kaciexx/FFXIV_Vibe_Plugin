@@ -12,7 +12,7 @@ using FFXIV_Vibe_Plugin.Commons;
 using System.Text.RegularExpressions;
 
 namespace FFXIV_Vibe_Plugin.Triggers {
-  internal class TriggersController {
+  public class TriggersController {
     private readonly Logger Logger;
     private readonly PlayerStats PlayerStats;
     private ConfigurationProfile Profile;

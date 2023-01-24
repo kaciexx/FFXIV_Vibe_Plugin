@@ -9,7 +9,7 @@ using Dalamud.IoC;
 
 namespace FFXIV_Vibe_Plugin.Commons {
 
-  internal class Logger {
+  public class Logger {
 
     // Initialize the Dalamud.Gui system.
     private readonly Dalamud.Game.Gui.ChatGui? DalamudChatGui;

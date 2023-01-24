@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using FFXIV_Vibe_Plugin.Device;
 
 namespace FFXIV_Vibe_Plugin.Triggers {
-  enum KIND {
+  public enum KIND {
     Chat,
     Spell, 
     HPChange
   }
 
-  enum DIRECTION {
+  public enum DIRECTION {
     Any,
     Outgoing,
     Incoming,

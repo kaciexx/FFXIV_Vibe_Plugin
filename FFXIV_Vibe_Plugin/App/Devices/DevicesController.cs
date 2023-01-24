@@ -14,7 +14,7 @@ using Buttplug;
 #endregion
 
 namespace FFXIV_Vibe_Plugin.Device {
-  internal class DevicesController {
+  public class DevicesController {
     private readonly Logger Logger;
     private readonly Configuration Configuration;
     private ConfigurationProfile Profile;

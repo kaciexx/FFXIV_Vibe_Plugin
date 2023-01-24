@@ -1,19 +1,26 @@
-﻿using Dalamud.Game.Text;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Components;
-using Dalamud.Plugin;
-using FFXIV_Vibe_Plugin.Commons;
-using ImGuiNET;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 
+// Dalamud libs
+using ImGuiNET;
+using Dalamud.Game.Text;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
+using Dalamud.Plugin;
+using Dalamud.Interface.Windowing;
+
+// FFXIV_Vibe_Plugin libs
+using FFXIV_Vibe_Plugin.Commons;
+
+
+
 
 namespace FFXIV_Vibe_Plugin {
 
-  class PluginUI : IDisposable {
+  public class PluginUI : Window, IDisposable {
 
     private int frameCounter = 0;
 
@@ -33,15 +40,9 @@ namespace FFXIV_Vibe_Plugin {
 
     private readonly string DonationLink = "http://paypal.me/kaciedev";
 
-    // this extra bool exists for ImGui, since you can't ref a property
-    private bool visible = false;
-    public bool Visible {
-      get { return this.visible; }
-      set { this.visible = value; }
-    }
     private bool _expandedOnce = false;
     private readonly int WIDTH = 700;
-    private readonly int HEIGHT = 800;
+    private readonly int HEIGHT = 600;
     private readonly int COLUMN0_WIDTH = 130;
 
     private string _tmp_void = "";
@@ -75,16 +76,27 @@ namespace FFXIV_Vibe_Plugin {
     private string triggersViewMode = "default"; // default|edit|delete;
 
     /** Constructor */
+
+
     public PluginUI(
-      App currentPlugin,
-      Logger logger,
-      DalamudPluginInterface pluginInterface,
-      Configuration configuration,
-      ConfigurationProfile profile,
-      Device.DevicesController deviceController,
-      Triggers.TriggersController triggersController,
-      Patterns Patterns
-    ) {
+        App currentPlugin,
+        Logger logger,
+        DalamudPluginInterface pluginInterface,
+        Configuration configuration,
+        ConfigurationProfile profile,
+        Device.DevicesController deviceController,
+        Triggers.TriggersController triggersController,
+        Patterns Patterns
+      ) : base(
+        "FFXIV_Vibe_Plugin_UI",
+         ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
+        ImGuiWindowFlags.NoScrollWithMouse) {
+
+      this.Size = new Vector2(this.WIDTH, this.HEIGHT);
+      ImGui.SetNextWindowPos(new Vector2(100, 100), ImGuiCond.Appearing);
+      
+      
+      //if(ImGui.Begin("FFXIV Vibe Plugin", ref this.visible, ImGuiWindowFlags.None)) {
       this.Logger = logger;
       this.Configuration = configuration;
       this.ConfigurationProfile = profile;
@@ -96,30 +108,25 @@ namespace FFXIV_Vibe_Plugin {
       this.LoadImages();
     }
 
-    public void Display() {
-      this.Visible = true;
-      this._expandedOnce = false;
-    }
-
     /**
      * Function that will load all the images so that they are usable.
      * Don't forget to add the image into the project file.
      */
     private void LoadImages() {
       List<string> images = new();
-      images.Add("logo.png");
+      images.Add("icon.png");
 
       string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-      foreach(string img in images) {
-        string imagePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, $"Data\\Images\\{img}");
+      foreach (string img in images) {
+        string imagePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, $"{img}");
         this.loadedImages.Add(img, this.PluginInterface.UiBuilder.LoadImage(imagePath));
       }
     }
 
     public void Dispose() {
       // Dispose all loaded images.
-      foreach(KeyValuePair<string, ImGuiScene.TextureWrap> img in this.loadedImages) {
-        if(img.Value != null) img.Value.Dispose();
+      foreach (KeyValuePair<string, ImGuiScene.TextureWrap> img in this.loadedImages) {
+        if (img.Value != null) img.Value.Dispose();
       }
     }
 
@@ -127,7 +134,7 @@ namespace FFXIV_Vibe_Plugin {
       this.ConfigurationProfile = profile;
     }
 
-    public void Draw() {
+    public override void Draw() {
       // This is our only draw handler attached to UIBuilder, so it needs to be
       // able to draw any windows we might have open.
       // Each method checks its own visibility/state to ensure it only draws when
@@ -135,61 +142,52 @@ namespace FFXIV_Vibe_Plugin {
       // There are other ways to do this, but it is generally best to keep the number of
       // draw delegates as low as possible.
       DrawMainWindow();
-      frameCounter = (frameCounter+1) % 400;
+      frameCounter = (frameCounter + 1) % 400;
 
     }
 
     public void DrawMainWindow() {
-      if(!Visible) {
-        return;
-      }
-      if(!this._expandedOnce) {
+
+      if (!this._expandedOnce) {
         ImGui.SetNextWindowCollapsed(false);
         this._expandedOnce = true;
       }
 
-      ImGui.SetNextWindowPos(new Vector2(100, 100), ImGuiCond.Appearing);
-      ImGui.SetNextWindowSize(new Vector2(this.WIDTH, this.HEIGHT), ImGuiCond.Appearing);
-      ImGui.SetNextWindowSizeConstraints(new Vector2(this.WIDTH, this.HEIGHT), new Vector2(float.MaxValue, float.MaxValue));
-      if(ImGui.Begin("FFXIV Vibe Plugin", ref this.visible, ImGuiWindowFlags.None)) {
-        ImGui.Spacing();
+      ImGui.Spacing();
 
-        FFXIV_Vibe_Plugin.UI.UIBanner.Draw(this.frameCounter, this.Logger, this.loadedImages["logo.png"], this.DonationLink, this.DevicesController);
+      FFXIV_Vibe_Plugin.UI.UIBanner.Draw(this.frameCounter, this.Logger, this.loadedImages["icon.png"], this.DonationLink, this.DevicesController);
 
-        // Back to on column
-        ImGui.Columns(1);
+      // Back to on column
+      ImGui.Columns(1);
 
-        // Tab header
-        if(ImGui.BeginTabBar("##ConfigTabBar", ImGuiTabBarFlags.None)) {
-          if(ImGui.BeginTabItem("Connect")) {
-            FFXIV_Vibe_Plugin.UI.UIConnect.Draw(this.Configuration, this.ConfigurationProfile, this.app, this.DevicesController);
-            ImGui.EndTabItem();
-          }
+      // Tab header
+      if (ImGui.BeginTabBar("##ConfigTabBar", ImGuiTabBarFlags.None)) {
+        if (ImGui.BeginTabItem("Connect")) {
+          FFXIV_Vibe_Plugin.UI.UIConnect.Draw(this.Configuration, this.ConfigurationProfile, this.app, this.DevicesController);
+          ImGui.EndTabItem();
+        }
 
-          if(ImGui.BeginTabItem("Options")) {
-            this.DrawOptionsTab();
-            ImGui.EndTabItem();
-          }
-          if(ImGui.BeginTabItem("Devices")) {
-            this.DrawDevicesTab();
-            ImGui.EndTabItem();
-          }
-          if(ImGui.BeginTabItem("Triggers")) {
-            this.DrawTriggersTab();
-            ImGui.EndTabItem();
-          }
-          if(ImGui.BeginTabItem("Patterns")) {
-            this.DrawPatternsTab();
-            ImGui.EndTabItem();
-          }
-          if(ImGui.BeginTabItem("Help")) {
-            this.DrawHelpTab();
-            ImGui.EndTabItem();
-          }
+        if (ImGui.BeginTabItem("Options")) {
+          this.DrawOptionsTab();
+          ImGui.EndTabItem();
+        }
+        if (ImGui.BeginTabItem("Devices")) {
+          this.DrawDevicesTab();
+          ImGui.EndTabItem();
+        }
+        if (ImGui.BeginTabItem("Triggers")) {
+          this.DrawTriggersTab();
+          ImGui.EndTabItem();
+        }
+        if (ImGui.BeginTabItem("Patterns")) {
+          this.DrawPatternsTab();
+          ImGui.EndTabItem();
+        }
+        if (ImGui.BeginTabItem("Help")) {
+          this.DrawHelpTab();
+          ImGui.EndTabItem();
         }
       }
-
-      ImGui.End();
     }
 
     public void DrawOptionsTab() {
@@ -209,22 +207,22 @@ namespace FFXIV_Vibe_Plugin {
         string[] PROFILES = this.Configuration.Profiles.Select(profile => profile.Name).ToArray();
         int currentProfileIndex = this.Configuration.Profiles.FindIndex(profile => profile.Name == this.Configuration.CurrentProfileName);
         ImGui.SetNextItemWidth(350);
-        if(ImGui.Combo("###CONFIGURATION_CURRENT_PROFILE", ref currentProfileIndex, PROFILES, PROFILES.Length)) {
+        if (ImGui.Combo("###CONFIGURATION_CURRENT_PROFILE", ref currentProfileIndex, PROFILES, PROFILES.Length)) {
           this.Configuration.CurrentProfileName = this.Configuration.Profiles[currentProfileIndex].Name;
           this.app.SetProfile(this.Configuration.CurrentProfileName);
           this.Logger.Debug($"New profile selected: {this.Configuration.CurrentProfileName}");
           this.Configuration.Save();
         }
         ImGui.TableNextColumn();
-        if(ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Trash)) {
-          if(this.Configuration.Profiles.Count <= 1) {
+        if (ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Trash)) {
+          if (this.Configuration.Profiles.Count <= 1) {
             string errorMsg = "You can't delete this profile. At least one profile should exists. Create another one before deleting.";
             this.Logger.Error(errorMsg);
             this._tmp_currentProfile_ErrorMsg = errorMsg;
           } else {
             this.Configuration.RemoveProfile(this.ConfigurationProfile.Name);
             ConfigurationProfile? newProfileToUse = this.Configuration.GetFirstProfile();
-            if(newProfileToUse != null) {
+            if (newProfileToUse != null) {
               this.app.SetProfile(newProfileToUse.Name);
             }
             this.Configuration.Save();
@@ -235,15 +233,15 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.Text("Add new profile: ");
         ImGui.TableNextColumn();
         ImGui.SetNextItemWidth(350);
-        if(ImGui.InputText("###CONFIGURATION_NEW_PROFILE_NAME", ref _tmp_currentProfileNameToAdd, 150)) {
+        if (ImGui.InputText("###CONFIGURATION_NEW_PROFILE_NAME", ref _tmp_currentProfileNameToAdd, 150)) {
           this._tmp_currentProfile_ErrorMsg = "";
         }
         ImGui.TableNextColumn();
-        if(this._tmp_currentProfileNameToAdd.Length > 0) {
-          if(ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Plus)) {
-            if(this._tmp_currentProfileNameToAdd.Trim() != "") {
+        if (this._tmp_currentProfileNameToAdd.Length > 0) {
+          if (ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Plus)) {
+            if (this._tmp_currentProfileNameToAdd.Trim() != "") {
               bool wasAdded = this.Configuration.AddProfile(this._tmp_currentProfileNameToAdd);
-              if(!wasAdded) {
+              if (!wasAdded) {
                 string errorMsg = $"The current profile name '{this._tmp_currentProfileNameToAdd}' already exists!";
                 this.Logger.Error(errorMsg);
                 this._tmp_currentProfile_ErrorMsg = errorMsg;
@@ -261,14 +259,14 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.Text("Rename current profile");
         ImGui.TableNextColumn();
         ImGui.SetNextItemWidth(350);
-        if(ImGui.InputText("###CONFIGURATION_CURRENT_PROFILE_RENAME", ref this.ConfigurationProfile.Name, 150)) {
+        if (ImGui.InputText("###CONFIGURATION_CURRENT_PROFILE_RENAME", ref this.ConfigurationProfile.Name, 150)) {
           this.Configuration.CurrentProfileName = this.ConfigurationProfile.Name;
           this.Configuration.Save();
         }
         ImGui.EndTable();
 
 
-        if(this._tmp_currentProfile_ErrorMsg != "") {
+        if (this._tmp_currentProfile_ErrorMsg != "") {
           ImGui.TextColored(ImGuiColors.DalamudRed, this._tmp_currentProfile_ErrorMsg);
         }
       };
@@ -288,7 +286,7 @@ namespace FFXIV_Vibe_Plugin {
         bool config_AUTO_OPEN = this.ConfigurationProfile.AUTO_OPEN;
         ImGui.Text("Automatically open configuration panel.");
         ImGui.TableNextColumn();
-        if(ImGui.Checkbox("###GENERAL_OPTIONS_AUTO_OPEN", ref config_AUTO_OPEN)) {
+        if (ImGui.Checkbox("###GENERAL_OPTIONS_AUTO_OPEN", ref config_AUTO_OPEN)) {
           this.ConfigurationProfile.AUTO_OPEN = config_AUTO_OPEN;
           this.Configuration.Save();
         }
@@ -301,7 +299,7 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.TableNextColumn();
         int config_MAX_VIBE_THRESHOLD = this.ConfigurationProfile.MAX_VIBE_THRESHOLD;
         ImGui.SetNextItemWidth(201);
-        if(ImGui.SliderInt("###OPTION_MaximumThreshold", ref config_MAX_VIBE_THRESHOLD, 2, 100)) {
+        if (ImGui.SliderInt("###OPTION_MaximumThreshold", ref config_MAX_VIBE_THRESHOLD, 2, 100)) {
           this.ConfigurationProfile.MAX_VIBE_THRESHOLD = config_MAX_VIBE_THRESHOLD;
           this.Configuration.Save();
         }
@@ -312,7 +310,7 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.TableNextColumn();
         ImGui.Text("Log casted spells:");
         ImGui.TableNextColumn();
-        if(ImGui.Checkbox("###OPTION_VERBOSE_SPELL", ref this.ConfigurationProfile.VERBOSE_SPELL)) {
+        if (ImGui.Checkbox("###OPTION_VERBOSE_SPELL", ref this.ConfigurationProfile.VERBOSE_SPELL)) {
           this.Configuration.Save();
         }
         ImGui.SameLine();
@@ -323,7 +321,7 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.TableNextColumn();
         ImGui.Text("Log chat triggered:");
         ImGui.TableNextColumn();
-        if(ImGui.Checkbox("###OPTION_VERBOSE_CHAT", ref this.ConfigurationProfile.VERBOSE_CHAT)) {
+        if (ImGui.Checkbox("###OPTION_VERBOSE_CHAT", ref this.ConfigurationProfile.VERBOSE_CHAT)) {
           this.Configuration.Save();
         }
         ImGui.SameLine();
@@ -333,7 +331,7 @@ namespace FFXIV_Vibe_Plugin {
       }
       ImGui.EndChild();
 
-      if(this.ConfigurationProfile.VERBOSE_CHAT || this.ConfigurationProfile.VERBOSE_SPELL) {
+      if (this.ConfigurationProfile.VERBOSE_CHAT || this.ConfigurationProfile.VERBOSE_SPELL) {
         ImGui.TextColored(ImGuiColors.DalamudOrange, "Please, disabled chat and spell logs for better ingame performance.");
       }
     }
@@ -344,76 +342,76 @@ namespace FFXIV_Vibe_Plugin {
       ImGui.TextColored(ImGuiColors.DalamudViolet, "Actions");
       ImGui.BeginChild("###DevicesTab_General", new Vector2(-1, 40f), true);
       {
-        if(this.DevicesController.IsScanning()) {
-          if(ImGui.Button("Stop scanning", new Vector2(100, 24))) {
+        if (this.DevicesController.IsScanning()) {
+          if (ImGui.Button("Stop scanning", new Vector2(100, 24))) {
             this.DevicesController.StopScanningDevice();
           }
         } else {
-          if(ImGui.Button("Scan device", new Vector2(100, 24))) {
+          if (ImGui.Button("Scan device", new Vector2(100, 24))) {
             this.DevicesController.ScanDevice();
           }
         }
 
         ImGui.SameLine();
-        if(ImGui.Button("Update Battery", new Vector2(100, 24))) {
+        if (ImGui.Button("Update Battery", new Vector2(100, 24))) {
           this.DevicesController.UpdateAllBatteryLevel();
         }
         ImGui.SameLine();
-        if(ImGui.Button("Stop All", new Vector2(100, 24))) {
+        if (ImGui.Button("Stop All", new Vector2(100, 24))) {
           this.DevicesController.StopAll();
           this.simulator_currentAllIntensity = 0;
         }
       }
       ImGui.EndChild();
 
-      if(ImGui.CollapsingHeader($"All devices")) {
+      if (ImGui.CollapsingHeader($"All devices")) {
         ImGui.Text("Send to all:");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(200);
-        if(ImGui.SliderInt("###SendVibeAll_Intensity", ref this.simulator_currentAllIntensity, 0, 100)) {
+        if (ImGui.SliderInt("###SendVibeAll_Intensity", ref this.simulator_currentAllIntensity, 0, 100)) {
           this.DevicesController.SendVibeToAll(this.simulator_currentAllIntensity);
         }
       }
 
-      foreach(Device.Device device in this.DevicesController.GetDevices()) {
-        if(ImGui.CollapsingHeader($"[{device.Id}] {device.Name} - Battery: {device.GetBatteryPercentage()}")) {
+      foreach (Device.Device device in this.DevicesController.GetDevices()) {
+        if (ImGui.CollapsingHeader($"[{device.Id}] {device.Name} - Battery: {device.GetBatteryPercentage()}")) {
           ImGui.TextWrapped(device.ToString());
-          if(device.CanVibrate) {
+          if (device.CanVibrate) {
             ImGui.TextColored(ImGuiColors.DalamudViolet, "VIBRATE");
             ImGui.Indent(10);
-            for(int i = 0; i < device.VibrateMotors; i++) {
+            for (int i = 0; i < device.VibrateMotors; i++) {
               ImGui.Text($"Motor {i + 1}: ");
               ImGui.SameLine();
               ImGui.SetNextItemWidth(200);
-              if(ImGui.SliderInt($"###{device.Id} Intensity Vibrate Motor {i}", ref device.CurrentVibrateIntensity[i], 0, 100)) {
+              if (ImGui.SliderInt($"###{device.Id} Intensity Vibrate Motor {i}", ref device.CurrentVibrateIntensity[i], 0, 100)) {
                 this.DevicesController.SendVibrate(device, device.CurrentVibrateIntensity[i], i);
               }
             }
             ImGui.Unindent(10);
           }
 
-          if(device.CanRotate) {
+          if (device.CanRotate) {
             ImGui.TextColored(ImGuiColors.DalamudViolet, "ROTATE");
             ImGui.Indent(10);
-            for(int i = 0; i < device.RotateMotors; i++) {
+            for (int i = 0; i < device.RotateMotors; i++) {
               ImGui.Text($"Motor {i + 1}: ");
               ImGui.SameLine();
               ImGui.SetNextItemWidth(200);
-              if(ImGui.SliderInt($"###{device.Id} Intensity Rotate Motor {i}", ref device.CurrentRotateIntensity[i], 0, 100)) {
+              if (ImGui.SliderInt($"###{device.Id} Intensity Rotate Motor {i}", ref device.CurrentRotateIntensity[i], 0, 100)) {
                 this.DevicesController.SendRotate(device, device.CurrentRotateIntensity[i], i, true);
               }
             }
             ImGui.Unindent(10);
           }
 
-          if(device.CanLinear) {
+          if (device.CanLinear) {
             ImGui.TextColored(ImGuiColors.DalamudViolet, "LINEAR VIBES");
             ImGui.Indent(10);
-            for(int i = 0; i < device.LinearMotors; i++) {
+            for (int i = 0; i < device.LinearMotors; i++) {
               ImGui.Text($"Motor {i + 1}: ");
               ImGui.SameLine();
               ImGui.SetNextItemWidth(200);
-              if(ImGui.SliderInt($"###{device.Id} Intensity Linear Motor {i}", ref device.CurrentLinearIntensity[i], 0, 100)) {
+              if (ImGui.SliderInt($"###{device.Id} Intensity Linear Motor {i}", ref device.CurrentLinearIntensity[i], 0, 100)) {
                 this.DevicesController.SendLinear(device, device.CurrentLinearIntensity[i], 500, i);
               }
             }
@@ -427,40 +425,40 @@ namespace FFXIV_Vibe_Plugin {
     public unsafe void DrawTriggersTab() {
       List<Triggers.Trigger> triggers = this.TriggerController.GetTriggers();
       string selectedId = this.SelectedTrigger != null ? this.SelectedTrigger.Id : "";
-      if(ImGui.BeginChild("###TriggersSelector", new Vector2(ImGui.GetWindowContentRegionMax().X/3, -ImGui.GetFrameHeightWithSpacing()), true)) {
+      if (ImGui.BeginChild("###TriggersSelector", new Vector2(ImGui.GetWindowContentRegionMax().X / 3, -ImGui.GetFrameHeightWithSpacing()), true)) {
         ImGui.SetNextItemWidth(185);
         ImGui.InputText("###TriggersSelector_SearchBar", ref this.CURRENT_TRIGGER_SELECTOR_SEARCHBAR, 200);
         ImGui.Spacing();
-        
-        for(int triggerIndex=0; triggerIndex<triggers.Count; triggerIndex++) {
+
+        for (int triggerIndex = 0; triggerIndex < triggers.Count; triggerIndex++) {
           Triggers.Trigger trigger = triggers[triggerIndex];
-          if(trigger != null) {
+          if (trigger != null) {
             string enabled = trigger.Enabled ? "" : "[disabled]";
             string kindStr = $"{Enum.GetName(typeof(Triggers.KIND), trigger.Kind)}";
-            if(kindStr != null) {
+            if (kindStr != null) {
               kindStr = kindStr.ToUpper();
             }
-            string triggerName = $"{enabled}[{ kindStr}] {trigger.Name}";
-            string triggerNameWithId = $"{triggerName}###{ trigger.Id}";
-            if(!Helpers.RegExpMatch(this.Logger, triggerName, this.CURRENT_TRIGGER_SELECTOR_SEARCHBAR)) {
+            string triggerName = $"{enabled}[{kindStr}] {trigger.Name}";
+            string triggerNameWithId = $"{triggerName}###{trigger.Id}";
+            if (!Helpers.RegExpMatch(this.Logger, triggerName, this.CURRENT_TRIGGER_SELECTOR_SEARCHBAR)) {
               continue;
             }
-            
-            if(ImGui.Selectable($"{triggerNameWithId}", selectedId == trigger.Id)) { // We don't want to show the ID
+
+            if (ImGui.Selectable($"{triggerNameWithId}", selectedId == trigger.Id)) { // We don't want to show the ID
               this.SelectedTrigger = trigger;
               this.triggersViewMode = "edit";
             }
-            if(ImGui.IsItemHovered()) {
+            if (ImGui.IsItemHovered()) {
               ImGui.SetTooltip($"{triggerName}");
             }
-            if(ImGui.BeginDragDropSource()) {
+            if (ImGui.BeginDragDropSource()) {
               this._tmp_currentDraggingTriggerIndex = triggerIndex;
               ImGui.Text($"Dragging: {triggerName}");
               ImGui.SetDragDropPayload($"{triggerNameWithId}", (IntPtr)(&triggerIndex), sizeof(int));
               ImGui.EndDragDropSource();
             }
-            if(ImGui.BeginDragDropTarget()) {
-              if(this._tmp_currentDraggingTriggerIndex > -1 &&   ImGui.IsMouseReleased(ImGuiMouseButton.Left)) {
+            if (ImGui.BeginDragDropTarget()) {
+              if (this._tmp_currentDraggingTriggerIndex > -1 && ImGui.IsMouseReleased(ImGuiMouseButton.Left)) {
                 int srcIndex = this._tmp_currentDraggingTriggerIndex;
                 int targetIndex = triggerIndex;
                 (triggers[srcIndex], triggers[targetIndex]) = (triggers[targetIndex], triggers[srcIndex]);
@@ -476,11 +474,11 @@ namespace FFXIV_Vibe_Plugin {
       }
 
       ImGui.SameLine();
-      if(ImGui.BeginChild("###TriggerViewerPanel", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()), true)) {
-        if(this.triggersViewMode == "default") {
+      if (ImGui.BeginChild("###TriggerViewerPanel", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()), true)) {
+        if (this.triggersViewMode == "default") {
           ImGui.Text("Please select or add a trigger");
-        } else if(this.triggersViewMode == "edit") {
-          if(this.SelectedTrigger != null) {
+        } else if (this.triggersViewMode == "edit") {
+          if (this.SelectedTrigger != null) {
 
             // Init table
             ImGui.BeginTable("###TRIGGER_FORM_TABLE_GENERAL", 2);
@@ -498,7 +496,7 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableNextColumn();
             ImGui.Text("Enabled:");
             ImGui.TableNextColumn();
-            if(ImGui.Checkbox("###TRIGGER_ENABLED", ref this.SelectedTrigger.Enabled)) {
+            if (ImGui.Checkbox("###TRIGGER_ENABLED", ref this.SelectedTrigger.Enabled)) {
               this.Configuration.Save();
             };
             ImGui.TableNextRow();
@@ -507,8 +505,8 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableNextColumn();
             ImGui.Text("Trigger Name:");
             ImGui.TableNextColumn();
-            if(ImGui.InputText("###TRIGGER_NAME", ref this.SelectedTrigger.Name, 99)) {
-              if(this.SelectedTrigger.Name == "") {
+            if (ImGui.InputText("###TRIGGER_NAME", ref this.SelectedTrigger.Name, 99)) {
+              if (this.SelectedTrigger.Name == "") {
                 this.SelectedTrigger.Name = "no_name";
               }
               this.Configuration.Save();
@@ -534,9 +532,9 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableNextColumn();
             string[] TRIGGER_KIND = System.Enum.GetNames(typeof(Triggers.KIND));
             int currentKind = (int)this.SelectedTrigger.Kind;
-            if(ImGui.Combo("###TRIGGER_FORM_KIND", ref currentKind, TRIGGER_KIND, TRIGGER_KIND.Length)) {
+            if (ImGui.Combo("###TRIGGER_FORM_KIND", ref currentKind, TRIGGER_KIND, TRIGGER_KIND.Length)) {
               this.SelectedTrigger.Kind = currentKind;
-              if(currentKind == (int)Triggers.KIND.HPChange) {
+              if (currentKind == (int)Triggers.KIND.HPChange) {
                 this.SelectedTrigger.StartAfter = 0;
                 this.SelectedTrigger.StopAfter = 0;
               }
@@ -548,7 +546,7 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableNextColumn();
             ImGui.Text("Player name:");
             ImGui.TableNextColumn();
-            if(ImGui.InputText("###TRIGGER_CHAT_FROM_PLAYER_NAME", ref this.SelectedTrigger.FromPlayerName, 100)) {
+            if (ImGui.InputText("###TRIGGER_CHAT_FROM_PLAYER_NAME", ref this.SelectedTrigger.FromPlayerName, 100)) {
               this.SelectedTrigger.FromPlayerName = this.SelectedTrigger.FromPlayerName.Trim();
               this.Configuration.Save();
             };
@@ -562,14 +560,14 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.Text("Start after");
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(185);
-            if(ImGui.SliderFloat("###TRIGGER_FORM_START_AFTER", ref this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
+            if (ImGui.SliderFloat("###TRIGGER_FORM_START_AFTER", ref this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
               this.SelectedTrigger.StartAfter = Helpers.ClampFloat(this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER);
               this.Configuration.Save();
             }
             ImGui.SameLine();
             ImGui.SetNextItemWidth(45);
 
-            if(ImGui.InputFloat("###TRIGGER_FORM_START_AFTER_INPUT", ref this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
+            if (ImGui.InputFloat("###TRIGGER_FORM_START_AFTER_INPUT", ref this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
               this.SelectedTrigger.StartAfter = Helpers.ClampFloat(this.SelectedTrigger.StartAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER);
               this.Configuration.Save();
             }
@@ -582,13 +580,13 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.Text("Stop after");
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(185);
-            if(ImGui.SliderFloat("###TRIGGER_FORM_STOP_AFTER", ref this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
+            if (ImGui.SliderFloat("###TRIGGER_FORM_STOP_AFTER", ref this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
               this.SelectedTrigger.StopAfter = Helpers.ClampFloat(this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER);
               this.Configuration.Save();
             }
             ImGui.SameLine();
             ImGui.SetNextItemWidth(45);
-            if(ImGui.InputFloat("###TRIGGER_FORM_STOP_AFTER_INPUT", ref this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
+            if (ImGui.InputFloat("###TRIGGER_FORM_STOP_AFTER_INPUT", ref this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER)) {
               this.SelectedTrigger.StopAfter = Helpers.ClampFloat(this.SelectedTrigger.StopAfter, this.TRIGGER_MIN_AFTER, this.TRIGGER_MAX_AFTER);
               this.Configuration.Save();
             }
@@ -601,7 +599,7 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableNextColumn();
             ImGui.Text("Priority");
             ImGui.TableNextColumn();
-            if(ImGui.InputInt("###TRIGGER_FORM_PRIORITY", ref this.SelectedTrigger.Priority, 1)) {
+            if (ImGui.InputInt("###TRIGGER_FORM_PRIORITY", ref this.SelectedTrigger.Priority, 1)) {
               this.Configuration.Save();
             }
             ImGui.SameLine();
@@ -613,7 +611,7 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.Separator();
 
             // TRIGGER KIND:CHAT OPTIONS
-            if(this.SelectedTrigger.Kind == (int)Triggers.KIND.Chat) {
+            if (this.SelectedTrigger.Kind == (int)Triggers.KIND.Chat) {
 
               // TRIGGER FORM_TABLE_KIND_CHAT
               ImGui.BeginTable("###TRIGGER_FORM_TABLE_KIND_CHAT", 2);
@@ -625,7 +623,7 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.Text("Chat text:");
               ImGui.TableNextColumn();
               string currentChatText = this.SelectedTrigger.ChatText;
-              if(ImGui.InputText("###TRIGGER_CHAT_TEXT", ref currentChatText, 250)) {
+              if (ImGui.InputText("###TRIGGER_CHAT_TEXT", ref currentChatText, 250)) {
                 this.SelectedTrigger.ChatText = currentChatText.ToLower(); // ChatMsg is always lower
                 this.Configuration.Save();
               };
@@ -639,8 +637,8 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.TableNextColumn();
               int currentTypeAllowed = 0;
               string[] ChatTypesAllowedStrings = Enum.GetNames(typeof(XivChatType));
-              if(ImGui.Combo("###TRIGGER_CHAT_TEXT_TYPE_ALLOWED", ref currentTypeAllowed, ChatTypesAllowedStrings, ChatTypesAllowedStrings.Length)) {
-                if(!this.SelectedTrigger.AllowedChatTypes.Contains(currentTypeAllowed)) {
+              if (ImGui.Combo("###TRIGGER_CHAT_TEXT_TYPE_ALLOWED", ref currentTypeAllowed, ChatTypesAllowedStrings, ChatTypesAllowedStrings.Length)) {
+                if (!this.SelectedTrigger.AllowedChatTypes.Contains(currentTypeAllowed)) {
                   int XivChatTypeValue = (int)(XivChatType)Enum.Parse(typeof(XivChatType), ChatTypesAllowedStrings[currentTypeAllowed]);
                   this.SelectedTrigger.AllowedChatTypes.Add(XivChatTypeValue);
                 }
@@ -649,14 +647,14 @@ namespace FFXIV_Vibe_Plugin {
               ImGuiComponents.HelpMarker("Select some chats to observe or unselect all to watch every chats.");
               ImGui.TableNextRow();
 
-              if(this.SelectedTrigger.AllowedChatTypes.Count > 0) {
+              if (this.SelectedTrigger.AllowedChatTypes.Count > 0) {
 
                 ImGui.TableNextColumn();
                 ImGui.Text("Allowed Type:");
                 ImGui.TableNextColumn();
-                for(int indexAllowedChatType = 0; indexAllowedChatType < this.SelectedTrigger.AllowedChatTypes.Count; indexAllowedChatType++) {
+                for (int indexAllowedChatType = 0; indexAllowedChatType < this.SelectedTrigger.AllowedChatTypes.Count; indexAllowedChatType++) {
                   int XivChatTypeValue = this.SelectedTrigger.AllowedChatTypes[indexAllowedChatType];
-                  if(ImGuiComponents.IconButton(indexAllowedChatType, Dalamud.Interface.FontAwesomeIcon.Minus)) {
+                  if (ImGuiComponents.IconButton(indexAllowedChatType, Dalamud.Interface.FontAwesomeIcon.Minus)) {
                     this.SelectedTrigger.AllowedChatTypes.RemoveAt(indexAllowedChatType);
                     this.Configuration.Save();
                   };
@@ -679,14 +677,14 @@ namespace FFXIV_Vibe_Plugin {
             ImGui.TableSetupColumn("###TRIGGER_FORM_TABLE_KIND_SPELL_COL2", ImGuiTableColumnFlags.WidthStretch);
 
             // TRIGGER KIND:SPELL OPTIONS
-            if(this.SelectedTrigger.Kind == (int)Triggers.KIND.Spell){
+            if (this.SelectedTrigger.Kind == (int)Triggers.KIND.Spell) {
               // TRIGGER TYPE
               ImGui.TableNextColumn();
               ImGui.Text("Type:");
               ImGui.TableNextColumn();
               string[] TRIGGER = System.Enum.GetNames(typeof(FFXIV_Vibe_Plugin.Commons.Structures.ActionEffectType));
               int currentEffectType = (int)this.SelectedTrigger.ActionEffectType;
-              if(ImGui.Combo("###TRIGGER_FORM_EVENT", ref currentEffectType, TRIGGER, TRIGGER.Length)) {
+              if (ImGui.Combo("###TRIGGER_FORM_EVENT", ref currentEffectType, TRIGGER, TRIGGER.Length)) {
                 this.SelectedTrigger.ActionEffectType = currentEffectType;
                 this.SelectedTrigger.Reset();
                 this.Configuration.Save();
@@ -697,7 +695,7 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.TableNextColumn();
               ImGui.Text("Spell Text:");
               ImGui.TableNextColumn();
-              if(ImGui.InputText("###TRIGGER_FORM_SPELLNAME", ref this.SelectedTrigger.SpellText, 100)) {
+              if (ImGui.InputText("###TRIGGER_FORM_SPELLNAME", ref this.SelectedTrigger.SpellText, 100)) {
                 this.Configuration.Save();
               }
               ImGui.SameLine();
@@ -710,7 +708,7 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.TableNextColumn();
               string[] DIRECTIONS = System.Enum.GetNames(typeof(Triggers.DIRECTION));
               int currentDirection = (int)this.SelectedTrigger.Direction;
-              if(ImGui.Combo("###TRIGGER_FORM_DIRECTION", ref currentDirection, DIRECTIONS, DIRECTIONS.Length)) {
+              if (ImGui.Combo("###TRIGGER_FORM_DIRECTION", ref currentDirection, DIRECTIONS, DIRECTIONS.Length)) {
                 this.SelectedTrigger.Direction = currentDirection;
                 this.Configuration.Save();
               }
@@ -719,36 +717,35 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.TableNextRow();
             }
 
-            if(
+            if (
                   this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Damage ||
                   this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Heal
-                 || 
-                this.SelectedTrigger.Kind == (int)Triggers.KIND.HPChange)
-            {
+                 ||
+                this.SelectedTrigger.Kind == (int)Triggers.KIND.HPChange) {
               // Min/Max amount values
               string type = "";
-              if(this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Damage) { type = "damage"; }
-              if(this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Heal) { type = "heal"; }
-              if(this.SelectedTrigger.Kind == (int)Triggers.KIND.HPChange) { type = "health"; }
-              
+              if (this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Damage) { type = "damage"; }
+              if (this.SelectedTrigger.ActionEffectType == (int)Structures.ActionEffectType.Heal) { type = "heal"; }
+              if (this.SelectedTrigger.Kind == (int)Triggers.KIND.HPChange) { type = "health"; }
+
               // TRIGGER AMOUNT IN PERCENTAGE
               ImGui.TableNextColumn();
               ImGui.Text("Amount in percentage?");
               ImGui.TableNextColumn();
-              if(ImGui.Checkbox("###TRIGGER_AMOUNT_IN_PERCENTAGE", ref this.SelectedTrigger.AmountInPercentage)){
+              if (ImGui.Checkbox("###TRIGGER_AMOUNT_IN_PERCENTAGE", ref this.SelectedTrigger.AmountInPercentage)) {
                 this.SelectedTrigger.AmountMinValue = 0;
                 this.SelectedTrigger.AmountMaxValue = 100;
                 this.Configuration.Save();
               }
 
-              
+
 
               // TRIGGER MIN_VALUE
               ImGui.TableNextColumn();
               ImGui.Text($"Min {type} value:");
               ImGui.TableNextColumn();
               if (this.SelectedTrigger.AmountInPercentage) {
-                if(ImGui.SliderInt("###TRIGGER_FORM_MIN_AMOUNT", ref this.SelectedTrigger.AmountMinValue, 0, 100)) {
+                if (ImGui.SliderInt("###TRIGGER_FORM_MIN_AMOUNT", ref this.SelectedTrigger.AmountMinValue, 0, 100)) {
                   this.Configuration.Save();
                 }
               } else {
@@ -766,8 +763,7 @@ namespace FFXIV_Vibe_Plugin {
                 if (ImGui.SliderInt("###TRIGGER_FORM_MAX_AMOUNT", ref this.SelectedTrigger.AmountMaxValue, 0, 100)) {
                   this.Configuration.Save();
                 }
-              }
-              else {
+              } else {
                 if (ImGui.InputInt("###TRIGGER_FORM_MAX_AMOUNT", ref this.SelectedTrigger.AmountMaxValue, 100)) {
                   this.Configuration.Save();
                 }
@@ -781,15 +777,15 @@ namespace FFXIV_Vibe_Plugin {
 
             // TRIGGER COMBO_DEVICES
             Dictionary<String, Device.Device> visitedDevice = DevicesController.GetVisitedDevices();
-            if(visitedDevice.Count == 0) {
+            if (visitedDevice.Count == 0) {
               ImGui.TextColored(ImGuiColors.DalamudRed, "Please connect yourself to intiface and add device(s)...");
             } else {
               string[] devicesStrings = visitedDevice.Keys.ToArray();
               ImGui.Combo("###TRIGGER_FORM_COMBO_DEVICES", ref this.TRIGGER_CURRENT_SELECTED_DEVICE, devicesStrings, devicesStrings.Length);
               ImGui.SameLine();
               List<Triggers.TriggerDevice> triggerDevices = this.SelectedTrigger.Devices;
-              if(ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Plus)) {
-                if(this.TRIGGER_CURRENT_SELECTED_DEVICE >= 0) {
+              if (ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Plus)) {
+                if (this.TRIGGER_CURRENT_SELECTED_DEVICE >= 0) {
                   Device.Device device = visitedDevice[devicesStrings[this.TRIGGER_CURRENT_SELECTED_DEVICE]];
                   Triggers.TriggerDevice newTriggerDevice = new(device);
                   triggerDevices.Add(newTriggerDevice);
@@ -799,35 +795,35 @@ namespace FFXIV_Vibe_Plugin {
 
               string[] patternNames = this.Patterns.GetAllPatterns().Select(p => p.Name).ToArray();
 
-              for(int indexDevice = 0; indexDevice < triggerDevices.Count; indexDevice++) {
+              for (int indexDevice = 0; indexDevice < triggerDevices.Count; indexDevice++) {
                 string prefixLabel = $"###TRIGGER_FORM_COMBO_DEVICE_${indexDevice}";
                 Triggers.TriggerDevice triggerDevice = triggerDevices[indexDevice];
                 string deviceName = triggerDevice.Device != null ? triggerDevice.Device.Name : "UnknownDevice";
-                if(ImGui.CollapsingHeader($"{deviceName}")) {
+                if (ImGui.CollapsingHeader($"{deviceName}")) {
                   ImGui.Indent(10);
 
-                  if(triggerDevice != null && triggerDevice.Device != null) {
-                    if(triggerDevice.Device.CanVibrate) {
-                      if(ImGui.Checkbox($"{prefixLabel}_SHOULD_VIBRATE", ref triggerDevice.ShouldVibrate)) {
+                  if (triggerDevice != null && triggerDevice.Device != null) {
+                    if (triggerDevice.Device.CanVibrate) {
+                      if (ImGui.Checkbox($"{prefixLabel}_SHOULD_VIBRATE", ref triggerDevice.ShouldVibrate)) {
                         triggerDevice.ShouldStop = false;
                         this.Configuration.Save();
                       }
                       ImGui.SameLine();
                       ImGui.Text("Should Vibrate");
-                      if(triggerDevice.ShouldVibrate) {
+                      if (triggerDevice.ShouldVibrate) {
                         ImGui.Indent(20);
-                        for(int motorId = 0; motorId < triggerDevice.Device.VibrateMotors; motorId++) {
+                        for (int motorId = 0; motorId < triggerDevice.Device.VibrateMotors; motorId++) {
                           ImGui.Text($"Motor {motorId + 1}");
                           ImGui.SameLine();
                           // Display Vibrate Motor checkbox
-                          if(ImGui.Checkbox($"{prefixLabel}_SHOULD_VIBRATE_MOTOR_{motorId}", ref triggerDevice.VibrateSelectedMotors[motorId])) {
+                          if (ImGui.Checkbox($"{prefixLabel}_SHOULD_VIBRATE_MOTOR_{motorId}", ref triggerDevice.VibrateSelectedMotors[motorId])) {
                             this.Configuration.Save();
                           }
 
-                          if(triggerDevice.VibrateSelectedMotors[motorId]) {
+                          if (triggerDevice.VibrateSelectedMotors[motorId]) {
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(90);
-                            if(ImGui.Combo($"###{prefixLabel}_VIBRATE_PATTERNS_{motorId}", ref triggerDevice.VibrateMotorsPattern[motorId], patternNames, patternNames.Length)) {
+                            if (ImGui.Combo($"###{prefixLabel}_VIBRATE_PATTERNS_{motorId}", ref triggerDevice.VibrateMotorsPattern[motorId], patternNames, patternNames.Length)) {
                               this.Configuration.Save();
                             }
 
@@ -835,8 +831,8 @@ namespace FFXIV_Vibe_Plugin {
                             int currentPatternIndex = triggerDevice.VibrateMotorsPattern[motorId];
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(180);
-                            if(ImGui.SliderInt($"{prefixLabel}_SHOULD_VIBRATE_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.VibrateMotorsThreshold[motorId], 0, 100)) {
-                              if(triggerDevice.VibrateMotorsThreshold[motorId] > 0) {
+                            if (ImGui.SliderInt($"{prefixLabel}_SHOULD_VIBRATE_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.VibrateMotorsThreshold[motorId], 0, 100)) {
+                              if (triggerDevice.VibrateMotorsThreshold[motorId] > 0) {
                                 triggerDevice.VibrateSelectedMotors[motorId] = true;
                               }
                               this.Configuration.Save();
@@ -846,33 +842,33 @@ namespace FFXIV_Vibe_Plugin {
                         ImGui.Indent(-20);
                       }
                     }
-                    if(triggerDevice.Device.CanRotate) {
-                      if(ImGui.Checkbox($"{prefixLabel}_SHOULD_ROTATE", ref triggerDevice.ShouldRotate)) {
+                    if (triggerDevice.Device.CanRotate) {
+                      if (ImGui.Checkbox($"{prefixLabel}_SHOULD_ROTATE", ref triggerDevice.ShouldRotate)) {
                         triggerDevice.ShouldStop = false;
                         this.Configuration.Save();
                       }
                       ImGui.SameLine();
                       ImGui.Text("Should Rotate");
-                      if(triggerDevice.ShouldRotate) {
+                      if (triggerDevice.ShouldRotate) {
                         ImGui.Indent(20);
-                        for(int motorId = 0; motorId < triggerDevice.Device.RotateMotors; motorId++) {
+                        for (int motorId = 0; motorId < triggerDevice.Device.RotateMotors; motorId++) {
                           ImGui.Text($"Motor {motorId + 1}");
                           ImGui.SameLine();
-                          if(ImGui.Checkbox($"{prefixLabel}_SHOULD_ROTATE_MOTOR_{motorId}", ref triggerDevice.RotateSelectedMotors[motorId])) {
+                          if (ImGui.Checkbox($"{prefixLabel}_SHOULD_ROTATE_MOTOR_{motorId}", ref triggerDevice.RotateSelectedMotors[motorId])) {
                             this.Configuration.Save();
                           }
-                          if(triggerDevice.RotateSelectedMotors[motorId]) {
+                          if (triggerDevice.RotateSelectedMotors[motorId]) {
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(90);
-                            if(ImGui.Combo($"###{prefixLabel}_ROTATE_PATTERNS_{motorId}", ref triggerDevice.RotateMotorsPattern[motorId], patternNames, patternNames.Length)) {
+                            if (ImGui.Combo($"###{prefixLabel}_ROTATE_PATTERNS_{motorId}", ref triggerDevice.RotateMotorsPattern[motorId], patternNames, patternNames.Length)) {
                               this.Configuration.Save();
                             }
                             // Special intensity pattern asks for intensity param.
                             int currentPatternIndex = triggerDevice.RotateMotorsPattern[motorId];
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(180);
-                            if(ImGui.SliderInt($"{prefixLabel}_SHOULD_ROTATE_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.RotateMotorsThreshold[motorId], 0, 100)) {
-                              if(triggerDevice.RotateMotorsThreshold[motorId] > 0) {
+                            if (ImGui.SliderInt($"{prefixLabel}_SHOULD_ROTATE_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.RotateMotorsThreshold[motorId], 0, 100)) {
+                              if (triggerDevice.RotateMotorsThreshold[motorId] > 0) {
                                 triggerDevice.RotateSelectedMotors[motorId] = true;
                               }
                               this.Configuration.Save();
@@ -883,33 +879,33 @@ namespace FFXIV_Vibe_Plugin {
                         ImGui.Indent(-20);
                       }
                     }
-                    if(triggerDevice.Device.CanLinear) {
-                      if(ImGui.Checkbox($"{prefixLabel}_SHOULD_LINEAR", ref triggerDevice.ShouldLinear)) {
+                    if (triggerDevice.Device.CanLinear) {
+                      if (ImGui.Checkbox($"{prefixLabel}_SHOULD_LINEAR", ref triggerDevice.ShouldLinear)) {
                         triggerDevice.ShouldStop = false;
                         this.Configuration.Save();
                       }
                       ImGui.SameLine();
                       ImGui.Text("Should Linear");
-                      if(triggerDevice.ShouldLinear) {
+                      if (triggerDevice.ShouldLinear) {
                         ImGui.Indent(20);
-                        for(int motorId = 0; motorId < triggerDevice.Device.LinearMotors; motorId++) {
+                        for (int motorId = 0; motorId < triggerDevice.Device.LinearMotors; motorId++) {
                           ImGui.Text($"Motor {motorId + 1}");
                           ImGui.SameLine();
-                          if(ImGui.Checkbox($"{prefixLabel}_SHOULD_LINEAR_MOTOR_{motorId}", ref triggerDevice.LinearSelectedMotors[motorId])) {
+                          if (ImGui.Checkbox($"{prefixLabel}_SHOULD_LINEAR_MOTOR_{motorId}", ref triggerDevice.LinearSelectedMotors[motorId])) {
                             this.Configuration.Save();
                           }
-                          if(triggerDevice.LinearSelectedMotors[motorId]) {
+                          if (triggerDevice.LinearSelectedMotors[motorId]) {
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(90);
-                            if(ImGui.Combo($"###{prefixLabel}_LINEAR_PATTERNS_{motorId}", ref triggerDevice.LinearMotorsPattern[motorId], patternNames, patternNames.Length)) {
+                            if (ImGui.Combo($"###{prefixLabel}_LINEAR_PATTERNS_{motorId}", ref triggerDevice.LinearMotorsPattern[motorId], patternNames, patternNames.Length)) {
                               this.Configuration.Save();
                             }
                             // Special intensity pattern asks for intensity param.
                             int currentPatternIndex = triggerDevice.LinearMotorsPattern[motorId];
                             ImGui.SameLine();
                             ImGui.SetNextItemWidth(180);
-                            if(ImGui.SliderInt($"{prefixLabel}_SHOULD_LINEAR_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.LinearMotorsThreshold[motorId], 0, 100)) {
-                              if(triggerDevice.LinearMotorsThreshold[motorId] > 0) {
+                            if (ImGui.SliderInt($"{prefixLabel}_SHOULD_LINEAR_MOTOR_{motorId}_THRESHOLD", ref triggerDevice.LinearMotorsThreshold[motorId], 0, 100)) {
+                              if (triggerDevice.LinearMotorsThreshold[motorId] > 0) {
                                 triggerDevice.LinearSelectedMotors[motorId] = true;
                               }
                               this.Configuration.Save();
@@ -919,8 +915,8 @@ namespace FFXIV_Vibe_Plugin {
                         ImGui.Indent(-20);
                       }
                     }
-                    if(triggerDevice.Device.CanStop) {
-                      if(ImGui.Checkbox($"{prefixLabel}_SHOULD_STOP", ref triggerDevice.ShouldStop)) {
+                    if (triggerDevice.Device.CanStop) {
+                      if (ImGui.Checkbox($"{prefixLabel}_SHOULD_STOP", ref triggerDevice.ShouldStop)) {
                         triggerDevice.ShouldVibrate = false;
                         triggerDevice.ShouldRotate = false;
                         triggerDevice.ShouldLinear = false;
@@ -931,7 +927,7 @@ namespace FFXIV_Vibe_Plugin {
                       ImGui.SameLine();
                       ImGuiComponents.HelpMarker("Instantly stop all motors for this device.");
                     }
-                    if(ImGui.Button($"Remove###{prefixLabel}_REMOVE")) {
+                    if (ImGui.Button($"Remove###{prefixLabel}_REMOVE")) {
                       triggerDevices.RemoveAt(indexDevice);
                       this.Logger.Log($"DEBUG: removing {indexDevice}");
                       this.Configuration.Save();
@@ -946,11 +942,11 @@ namespace FFXIV_Vibe_Plugin {
           } else {
             ImGui.TextColored(ImGuiColors.DalamudRed, "Current selected trigger is null");
           }
-        } else if(this.triggersViewMode == "delete") {
-          if(this.SelectedTrigger != null) {
+        } else if (this.triggersViewMode == "delete") {
+          if (this.SelectedTrigger != null) {
             ImGui.TextColored(ImGuiColors.DalamudRed, $"Are you sure you want to delete trigger ID: {this.SelectedTrigger.Id}");
-            if(ImGui.Button("Yes")) {
-              if(this.SelectedTrigger != null) {
+            if (ImGui.Button("Yes")) {
+              if (this.SelectedTrigger != null) {
                 this.TriggerController.RemoveTrigger(this.SelectedTrigger);
                 this.SelectedTrigger = null;
                 this.Configuration.Save();
@@ -958,7 +954,7 @@ namespace FFXIV_Vibe_Plugin {
               this.triggersViewMode = "default";
             };
             ImGui.SameLine();
-            if(ImGui.Button("No")) {
+            if (ImGui.Button("No")) {
               this.SelectedTrigger = null;
               this.triggersViewMode = "default";
             };
@@ -967,7 +963,7 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.EndChild();
       }
 
-      if(ImGui.Button("Add")) {
+      if (ImGui.Button("Add")) {
         Triggers.Trigger trigger = new("New Trigger");
         this.TriggerController.AddTrigger(trigger);
         this.SelectedTrigger = trigger;
@@ -975,7 +971,7 @@ namespace FFXIV_Vibe_Plugin {
         this.Configuration.Save();
       };
       ImGui.SameLine();
-      if(ImGui.Button("Delete")) {
+      if (ImGui.Button("Delete")) {
         this.triggersViewMode = "delete";
       }
 
@@ -993,7 +989,7 @@ namespace FFXIV_Vibe_Plugin {
       ImGui.Text("Pattern Name:");
       ImGui.TableNextColumn();
       ImGui.SetNextItemWidth(300);
-      if(ImGui.InputText("###PATTERNS_CURRENT_PATTERN_NAME_TO_ADD", ref this._tmp_currentPatternNameToAdd, 150)) {
+      if (ImGui.InputText("###PATTERNS_CURRENT_PATTERN_NAME_TO_ADD", ref this._tmp_currentPatternNameToAdd, 150)) {
         this._tmp_currentPatternNameToAdd = this._tmp_currentPatternNameToAdd.Trim();
       }
       ImGui.TableNextRow();
@@ -1001,10 +997,10 @@ namespace FFXIV_Vibe_Plugin {
       ImGui.Text("Pattern Value:");
       ImGui.TableNextColumn();
       ImGui.SetNextItemWidth(300);
-      if(ImGui.InputText("###PATTERNS_CURRENT_PATTERN_VALUE_TO_ADD", ref this._tmp_currentPatternValueToAdd, 500)) {
+      if (ImGui.InputText("###PATTERNS_CURRENT_PATTERN_VALUE_TO_ADD", ref this._tmp_currentPatternValueToAdd, 500)) {
         this._tmp_currentPatternValueToAdd = this._tmp_currentPatternValueToAdd.Trim();
         string value = this._tmp_currentPatternValueToAdd.Trim();
-        if(value == "") {
+        if (value == "") {
           this._tmp_currentPatternValueState = "unset";
         } else {
           this._tmp_currentPatternValueState = Helpers.RegExpMatch(this.Logger, this._tmp_currentPatternValueToAdd, this.VALID_REGEXP_PATTERN) ? "valid" : "unvalid";
@@ -1014,9 +1010,9 @@ namespace FFXIV_Vibe_Plugin {
 
 
 
-      if(this._tmp_currentPatternNameToAdd.Trim() != "" && this._tmp_currentPatternValueState == "valid") {
+      if (this._tmp_currentPatternNameToAdd.Trim() != "" && this._tmp_currentPatternValueState == "valid") {
         ImGui.TableNextColumn();
-        if(ImGui.Button("Save")) {
+        if (ImGui.Button("Save")) {
           Pattern newPattern = new(this._tmp_currentPatternNameToAdd, this._tmp_currentPatternValueToAdd);
           this.Patterns.AddCustomPattern(newPattern);
           this.ConfigurationProfile.PatternList = this.Patterns.GetCustomPatterns();
@@ -1028,7 +1024,7 @@ namespace FFXIV_Vibe_Plugin {
       }
       ImGui.TableNextRow();
 
-      if(this._tmp_currentPatternValueState == "unvalid") {
+      if (this._tmp_currentPatternValueState == "unvalid") {
         ImGui.TableNextColumn();
         ImGui.TextColored(ImGuiColors.DalamudRed, "WRONG FORMAT!");
         ImGui.TableNextColumn();
@@ -1044,7 +1040,7 @@ namespace FFXIV_Vibe_Plugin {
       ImGui.Separator();
 
 
-      if(customPatterns.Count == 0) {
+      if (customPatterns.Count == 0) {
         ImGui.Text("No custom patterns, please add some");
       } else {
         ImGui.TextColored(ImGuiColors.DalamudViolet, "Custom Patterns:");
@@ -1064,31 +1060,31 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.TableNextRow();
 
 
-        for(int patternIndex = 0; patternIndex < customPatterns.Count; patternIndex++) {
+        for (int patternIndex = 0; patternIndex < customPatterns.Count; patternIndex++) {
           Pattern pattern = customPatterns[patternIndex];
-          if(!Helpers.RegExpMatch(this.Logger, pattern.Name, this.CURRENT_PATTERN_SEARCHBAR)) {
+          if (!Helpers.RegExpMatch(this.Logger, pattern.Name, this.CURRENT_PATTERN_SEARCHBAR)) {
             continue;
           }
           ImGui.TableNextColumn();
           ImGui.Text($"{pattern.Name}");
-          if(ImGui.IsItemHovered()) {
+          if (ImGui.IsItemHovered()) {
             ImGui.SetTooltip($"{pattern.Name}");
           }
           ImGui.TableNextColumn();
           string valueShort = pattern.Value;
-          if(valueShort.Length > 70) {
+          if (valueShort.Length > 70) {
             valueShort = $"{valueShort[..70]}...";
           }
           ImGui.Text(valueShort);
-          if(ImGui.IsItemHovered()) {
+          if (ImGui.IsItemHovered()) {
             ImGui.SetTooltip($"{pattern.Value}");
           }
 
           ImGui.TableNextColumn();
 
-          if(ImGuiComponents.IconButton(patternIndex, Dalamud.Interface.FontAwesomeIcon.Trash)) {
+          if (ImGuiComponents.IconButton(patternIndex, Dalamud.Interface.FontAwesomeIcon.Trash)) {
             bool ok = this.Patterns.RemoveCustomPattern(pattern);
-            if(!ok) {
+            if (!ok) {
               this.Logger.Error($"Could not remove pattern {pattern.Name}");
             } else {
               List<Pattern> newPatternList = this.Patterns.GetCustomPatterns();
@@ -1097,7 +1093,7 @@ namespace FFXIV_Vibe_Plugin {
             }
           }
           ImGui.SameLine();
-          if(ImGuiComponents.IconButton(patternIndex, Dalamud.Interface.FontAwesomeIcon.Pen)) {
+          if (ImGuiComponents.IconButton(patternIndex, Dalamud.Interface.FontAwesomeIcon.Pen)) {
             this._tmp_currentPatternNameToAdd = pattern.Name;
             this._tmp_currentPatternValueToAdd = pattern.Value;
             this._tmp_currentPatternValueState = "valid";

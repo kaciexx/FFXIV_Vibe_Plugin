@@ -14,6 +14,7 @@ using Dalamud.Game.Command;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
+using Dalamud.Interface.Windowing;
 
 // FFXIV_Vibe_Plugin libs
 using FFXIV_Vibe_Plugin.Commons;
@@ -24,7 +25,7 @@ using FFXIV_Vibe_Plugin.Migrations;
 
 
 namespace FFXIV_Vibe_Plugin {
-  internal class App {
+  public class App {
     private Dalamud.Game.Gui.ChatGui? DalamudChat { get; init; }
     public Configuration Configuration { get; init; }
     private GameNetwork GameNetwork { get; init; }
@@ -35,12 +36,13 @@ namespace FFXIV_Vibe_Plugin {
     private DalamudPluginInterface PluginInterface { get; init; }
 
     // Custom variables from Kacie
+    private readonly Plugin Plugin;
     private readonly bool wasInit = false;
     public readonly string CommandName = "";
+    public PluginUI PluginUi { get; init; }
     private readonly string ShortName = "";
     private bool _firstUpdated = false;
     private readonly PlayerStats PlayerStats;
-    private PluginUI PluginUi { get; init; }
     private ConfigurationProfile ConfigurationProfile;
     private readonly Logger Logger;
     private readonly ActionEffect hook_ActionEffect;
@@ -51,8 +53,8 @@ namespace FFXIV_Vibe_Plugin {
     // Experiments
     private readonly NetworkCapture experiment_networkCapture;
 
-    public App(string commandName, string shortName, GameNetwork gameNetwork, ClientState clientState, DataManager dataManager, Dalamud.Game.Gui.ChatGui? dalamudChat, Configuration configuration, SigScanner scanner, ObjectTable gameObjects, DalamudPluginInterface pluginInterface) {
-      return;
+    public App(Plugin plugin, string commandName, string shortName, GameNetwork gameNetwork, ClientState clientState, DataManager dataManager, Dalamud.Game.Gui.ChatGui? dalamudChat, Configuration configuration, SigScanner scanner, ObjectTable gameObjects, DalamudPluginInterface pluginInterface) {
+      this.Plugin = plugin;
       this.CommandName = commandName;
       this.ShortName = shortName;
       this.GameNetwork = gameNetwork;
@@ -63,25 +65,33 @@ namespace FFXIV_Vibe_Plugin {
       this.GameObjects = gameObjects;
       this.Scanner = scanner;
       this.PluginInterface = pluginInterface;
+      
+
       if (DalamudChat != null) {
         DalamudChat.ChatMessage += ChatWasTriggered;
       }
       this.Logger = new Logger(this.DalamudChat, ShortName, Logger.LogLevel.VERBOSE);
+      
 
       // Migrations
       Migration migration = new(Configuration, Logger);
       migration.Patch_0_2_0_to_1_0_0_config_profile();
 
+      
+
       // Configuration Profile
       this.ConfigurationProfile = this.Configuration.GetDefaultProfile();
+
+      
 
       // Patterns
       this.Patterns = new Patterns();
       this.Patterns.SetCustomPatterns(this.ConfigurationProfile.PatternList);
 
+
+
       // Initialize the devices Controller
-      /* TODO: this.DeviceController = new Device.DevicesController(this.Logger, this.Configuration, this.ConfigurationProfile, this.Patterns);*/
-      this.DeviceController = null;
+      this.DeviceController = new Device.DevicesController(this.Logger, this.Configuration, this.ConfigurationProfile, this.Patterns);
       if (this.ConfigurationProfile.AUTO_CONNECT) {
         Thread t = new(delegate () {
           Thread.Sleep(2000);
@@ -89,10 +99,13 @@ namespace FFXIV_Vibe_Plugin {
         });
         t.Start();
       }
+      
+
 
       // Initialize Hook ActionEffect
       this.hook_ActionEffect = new(this.DataManager, this.Logger, this.Scanner, clientState, gameObjects);
       this.hook_ActionEffect.ReceivedEvent += SpellWasTriggered;
+      
 
       // Init the login event.
       this.ClientState.Login += this.ClientState_LoginEvent;
@@ -101,13 +114,14 @@ namespace FFXIV_Vibe_Plugin {
       this.PlayerStats = new PlayerStats(this.Logger, this.ClientState);
       PlayerStats.Event_CurrentHpChanged += this.PlayerCurrentHPChanged;
       PlayerStats.Event_MaxHpChanged += this.PlayerCurrentHPChanged;
+      
 
       // Triggers
       this.TriggersController = new Triggers.TriggersController(this.Logger, this.PlayerStats, this.ConfigurationProfile);
 
       // UI
       this.PluginUi = new PluginUI(this, this.Logger, this.PluginInterface, this.Configuration, this.ConfigurationProfile, this.DeviceController, this.TriggersController, this.Patterns);
-
+      
       // Experimental
       this.experiment_networkCapture = new NetworkCapture(this.Logger, this.GameNetwork);
 
@@ -192,13 +206,12 @@ namespace FFXIV_Vibe_Plugin {
     }
 
     private void DisplayUI() {
-      if (this.PluginUi != null) {
-        this.PluginUi.Display();
-      }
+      this.Plugin.DrawConfigUI();
+      
     }
 
     private void DisplayConfigUI() {
-      this.PluginUi.Display();
+      this.Plugin.DrawConfigUI();
     }
 
     public void DrawUI() {
@@ -206,8 +219,6 @@ namespace FFXIV_Vibe_Plugin {
       if(this.PluginUi == null) {
         return;
       }
-
-      this.PluginUi.Draw();
 
       if (this.ClientState.IsLoggedIn) {
         this.PlayerStats.Update(this.ClientState);

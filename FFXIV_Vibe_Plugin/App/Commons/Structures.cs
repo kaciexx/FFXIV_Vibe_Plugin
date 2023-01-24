@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace FFXIV_Vibe_Plugin.Commons {
-  internal class Structures {
+  public class Structures {
 
     public enum ActionEffectType : byte {
       Any = 0,

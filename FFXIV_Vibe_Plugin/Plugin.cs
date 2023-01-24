@@ -7,7 +7,6 @@ using Dalamud.Game.Network;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using FFXIV_Vibe_Plugin.Windows;
 using System.IO;
 
 namespace FFXIV_Vibe_Plugin {
@@ -44,13 +43,6 @@ namespace FFXIV_Vibe_Plugin {
       this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
       this.Configuration.Initialize(this.PluginInterface);
 
-      // you might normally want to embed resources and load them from the manifest stream
-      var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "logo.png");
-      var logoImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
-
-      WindowSystem.AddWindow(new ConfigWindow(this));
-      WindowSystem.AddWindow(new MainWindow(this, logoImage));
-
       this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
         HelpMessage = "A vibe plugin for fun..."
       });
@@ -59,7 +51,10 @@ namespace FFXIV_Vibe_Plugin {
       this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
       // Init our own app
-      this.app = new FFXIV_Vibe_Plugin.App(CommandName, ShortName, gameNetwork, clientState, dataManager, DalamudChat, Configuration, scanner, gameObjects, pluginInterface);
+      this.app = new FFXIV_Vibe_Plugin.App(this, CommandName, ShortName, gameNetwork, clientState, dataManager, DalamudChat, Configuration, scanner, gameObjects, pluginInterface);
+      
+      // Setting the windows
+      WindowSystem.AddWindow(this.app.PluginUi);
     }
 
     public void Dispose() {
@@ -70,18 +65,15 @@ namespace FFXIV_Vibe_Plugin {
 
 
     private void OnCommand(string command, string args) {
-      // in response to the slash command, just display our main ui
-      WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
       this.app.OnCommand(command, args);
     }
 
     private void DrawUI() {
       this.WindowSystem.Draw();
-      this.app.DrawUI();
     }
 
     public void DrawConfigUI() {
-      WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
+      WindowSystem.GetWindow("FFXIV_Vibe_Plugin_UI").IsOpen = true;
     }
   }
 }

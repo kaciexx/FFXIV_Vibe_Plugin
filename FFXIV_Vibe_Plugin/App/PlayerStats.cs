@@ -5,7 +5,7 @@ using FFXIV_Vibe_Plugin.Commons;
 
 namespace FFXIV_Vibe_Plugin {
   
-  internal class PlayerStats {
+  public class PlayerStats {
     private readonly Logger Logger; 
 
     // EVENTS
