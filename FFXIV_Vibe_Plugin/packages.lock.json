@@ -2,11 +2,37 @@
   "version": 1,
   "dependencies": {
     "net7.0-windows7.0": {
+      "Buttplug": {
+        "type": "Direct",
+        "requested": "[2.0.6, )",
+        "resolved": "2.0.6",
+        "contentHash": "UNusT8YfG+KMYN7ZG0IPjqGbgOTGDm83n0N6zpF11QxciwyBiAcs7NHJquImuJdrDI7ygVtzb2VepGVrIH5HDw==",
+        "dependencies": {
+          "ButtplugRustFFI": "2.0.5",
+          "Google.Protobuf": "3.19.1",
+          "System.Memory": "4.5.4"
+        }
+      },
       "DalamudPackager": {
         "type": "Direct",
         "requested": "[2.1.10, )",
         "resolved": "2.1.10",
         "contentHash": "S6NrvvOnLgT4GDdgwuKVJjbFo+8ZEj+JsEYk9ojjOR/MMfv1dIFpT8aRJQfI24rtDcw1uF+GnSSMN4WW1yt7fw=="
+      },
+      "ButtplugRustFFI": {
+        "type": "Transitive",
+        "resolved": "2.0.5",
+        "contentHash": "1uwoNtiYysP5LvYJJYGYcOBSh6wLNQhpt8M1Mdeu4TEcM7LvMRQbjiIN6Bhd6W5Xpk1H+75kP3j/GFIsQyecUw=="
+      },
+      "Google.Protobuf": {
+        "type": "Transitive",
+        "resolved": "3.19.1",
+        "contentHash": "M6yun2BPdHkBjD3V14muZSt72azWHRJEx88ME2TyyH2+/ww6R3hIptjBFQQtO6pmkfLXW/NGQ4hADWSa9AmK2A=="
+      },
+      "System.Memory": {
+        "type": "Transitive",
+        "resolved": "4.5.4",
+        "contentHash": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw=="
       }
     }
   }

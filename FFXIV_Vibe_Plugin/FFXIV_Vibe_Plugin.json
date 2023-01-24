@@ -1,14 +1,14 @@
 {
-    "Author": "Kaciexx",
-    "Name": "FFXIV Vibe Plugin",
-    "Punchline": "Vibe controllers or toys",
-    "Description": "Plugin that let you vibe your controller or toys",
-    "RepoUrl": "https://github.com/kaciexx/FFXIV_Vibe_Plugin",
-    "InternalName": "FFXIV_Vibe_Plugin",
-    "ApplicableVersion": "any",
-    "Tags": [
-        "vibe",
-        "vibration",
-        "wave"
-    ]
+  "Author": "Kaciexx",
+  "Name": "FFXIV Vibe Plugin",
+  "Punchline": "Vibe controllers or toys",
+  "Description": "Plugin that let you vibe your controller or toys",
+  "RepoUrl": "https://github.com/kaciexx/FFXIV_Vibe_Plugin",
+  "InternalName": "FFXIV_Vibe_Plugin",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "vibe",
+    "vibration",
+    "wave"
+  ]
 }

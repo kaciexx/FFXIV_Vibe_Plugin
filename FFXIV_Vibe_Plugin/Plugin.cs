@@ -1,69 +1,87 @@
+using Dalamud.Data;
+using Dalamud.Game;
+using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
+using Dalamud.Game.Network;
+using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using FFXIV_Vibe_Plugin.Windows;
 using System.IO;
-using System.Reflection;
-using Dalamud.Interface.Windowing;
-using FFXIV_Plugin_Vibe.Windows;
 
-namespace FFXIV_Plugin_Vibe
-{
-    public sealed class Plugin : IDalamudPlugin
-    {
-        public string Name => "Sample Plugin";
-        private const string CommandName = "/pmycommand";
+namespace FFXIV_Vibe_Plugin {
+  public sealed class Plugin : IDalamudPlugin {
+    // Dalamud plugin definition
+    public string Name => "FFXIV Vibe Plugin";
+    public static readonly string ShortName = "FVP";
+    public readonly string CommandName = "/fvp";
 
-        private DalamudPluginInterface PluginInterface { get; init; }
-        private CommandManager CommandManager { get; init; }
-        public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("SamplePlugin");
+    // Dalamud plugins
+    private Dalamud.Game.Gui.ChatGui? DalamudChat { get; init; }
+    private DalamudPluginInterface PluginInterface { get; init; }
+    private CommandManager CommandManager { get; init; }
+    public Configuration Configuration { get; init; }
 
-        public Plugin(
-            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] CommandManager commandManager)
-        {
-            this.PluginInterface = pluginInterface;
-            this.CommandManager = commandManager;
+    public WindowSystem WindowSystem = new("FFXIV_Vibe_Plugin");
 
-            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(this.PluginInterface);
+    // FFXIV_Vibe_Plugin definition
+    // TODO: private PluginUI PluginUi { get; init; }
+    private FFXIV_Vibe_Plugin.App app;
 
-            // you might normally want to embed resources and load them from the manifest stream
-            var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
-            var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
+    public Plugin(
+        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
+        [RequiredVersion("1.0")] CommandManager commandManager,
+        [RequiredVersion("1.0")] ClientState clientState,
+        [RequiredVersion("1.0")] GameNetwork gameNetwork,
+        [RequiredVersion("1.0")] SigScanner scanner,
+        [RequiredVersion("1.0")] ObjectTable gameObjects,
+        [RequiredVersion("1.0")] DataManager dataManager
+        ) {
+      this.PluginInterface = pluginInterface;
+      this.CommandManager = commandManager;
 
-            WindowSystem.AddWindow(new ConfigWindow(this));
-            WindowSystem.AddWindow(new MainWindow(this, goatImage));
+      this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+      this.Configuration.Initialize(this.PluginInterface);
 
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = "A useful message to display in /xlhelp"
-            });
+      // you might normally want to embed resources and load them from the manifest stream
+      var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "logo.png");
+      var logoImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
 
-            this.PluginInterface.UiBuilder.Draw += DrawUI;
-            this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-        }
+      WindowSystem.AddWindow(new ConfigWindow(this));
+      WindowSystem.AddWindow(new MainWindow(this, logoImage));
 
-        public void Dispose()
-        {
-            this.WindowSystem.RemoveAllWindows();
-            this.CommandManager.RemoveHandler(CommandName);
-        }
+      this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
+        HelpMessage = "A vibe plugin for fun..."
+      });
 
-        private void OnCommand(string command, string args)
-        {
-            // in response to the slash command, just display our main ui
-            WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
-        }
+      this.PluginInterface.UiBuilder.Draw += DrawUI;
+      this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
-        private void DrawUI()
-        {
-            this.WindowSystem.Draw();
-        }
-
-        public void DrawConfigUI()
-        {
-            WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
-        }
+      // Init our own app
+      this.app = new FFXIV_Vibe_Plugin.App(CommandName, ShortName, gameNetwork, clientState, dataManager, DalamudChat, Configuration, scanner, gameObjects, pluginInterface);
     }
+
+    public void Dispose() {
+      this.WindowSystem.RemoveAllWindows();
+      this.CommandManager.RemoveHandler(CommandName);
+      this.app.Dispose();
+    }
+
+
+    private void OnCommand(string command, string args) {
+      // in response to the slash command, just display our main ui
+      WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
+      this.app.OnCommand(command, args);
+    }
+
+    private void DrawUI() {
+      this.WindowSystem.Draw();
+      this.app.DrawUI();
+    }
+
+    public void DrawConfigUI() {
+      WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
+    }
+  }
 }
