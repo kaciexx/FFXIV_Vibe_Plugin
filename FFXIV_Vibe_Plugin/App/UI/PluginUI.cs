@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 // Dalamud libs
 using ImGuiNET;
@@ -14,6 +15,11 @@ using Dalamud.Interface.Windowing;
 
 // FFXIV_Vibe_Plugin libs
 using FFXIV_Vibe_Plugin.Commons;
+using FFXIV_Vibe_Plugin.Triggers;
+
+// Json libs
+using Newtonsoft.Json;
+using System.Text.Json;
 
 
 
@@ -74,6 +80,7 @@ namespace FFXIV_Vibe_Plugin {
     // Trigger
     private Triggers.Trigger? SelectedTrigger = null;
     private string triggersViewMode = "default"; // default|edit|delete;
+    string _tmp_exportPatternResponse = "";
 
     /** Constructor */
 
@@ -327,6 +334,39 @@ namespace FFXIV_Vibe_Plugin {
         ImGui.SameLine();
         ImGuiComponents.HelpMarker("Use the /xllog to see all chat message. Disable this to have better ingame performance.");
 
+        ImGui.EndTable();
+      }
+      ImGui.EndChild();
+
+      ImGui.TextColored(ImGuiColors.DalamudViolet, "Trigger Import/Export Settings");
+      ImGui.BeginChild("###EXPORT_OPTIONS_ZONE", new Vector2(-1, 100f), true);
+      {
+        // Init table
+        ImGui.BeginTable("###EXPORT_OPTIONS_TABLE", 2);
+
+        ImGui.TableSetupColumn("###EXPORT_OPTIONS_TABLE_COL1", ImGuiTableColumnFlags.WidthFixed, 250);
+        ImGui.TableSetupColumn("###EXPORT_OPTIONS_TABLE_COL2", ImGuiTableColumnFlags.WidthStretch);
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Trigger Import/Export Directory:");
+        ImGui.TableNextColumn();
+        if (ImGui.InputText("###EXPORT_DIRECTORY_INPUT", ref this.ConfigurationProfile.EXPORT_DIR, 200)) {
+          this.Configuration.EXPORT_DIR = this.ConfigurationProfile.EXPORT_DIR;
+          this.Configuration.Save();
+        }
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+        if (ImGui.Button("Clear Import/Export Directory")) {
+          if (!this.ConfigurationProfile.EXPORT_DIR.Equals("")) {
+            try {
+              foreach (var filename in Directory.GetFiles(this.ConfigurationProfile.EXPORT_DIR)) {
+                File.Delete(filename);
+              }
+            } catch { }
+          }
+        }
+        ImGui.SameLine();
+        ImGuiComponents.HelpMarker("Deletes ALL files in the Import/Export Directory.");
         ImGui.EndTable();
       }
       ImGui.EndChild();
@@ -771,6 +811,16 @@ namespace FFXIV_Vibe_Plugin {
               ImGui.TableNextRow();
             }
             ImGui.EndTable();
+            ImGui.Separator();
+
+            if (ImGui.Button("Export")) {
+              this._tmp_exportPatternResponse = export_trigger(SelectedTrigger);
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker("Writes this trigger to your export directory.");
+            ImGui.SameLine();
+            ImGui.Text($"{this._tmp_exportPatternResponse}");
+            ImGui.Separator();
 
             ImGui.TextColored(ImGuiColors.DalamudViolet, "Actions & Devices");
             ImGui.Separator();
@@ -964,7 +1014,12 @@ namespace FFXIV_Vibe_Plugin {
       }
 
       if (ImGui.Button("Add")) {
-        Triggers.Trigger trigger = new("New Trigger");
+        int index = 0;
+        Triggers.Trigger trigger = new($"New Trigger {index}");
+        while (this.TriggerController.GetTriggers().Contains(trigger)) {
+          index++;
+          trigger = new($"New Trigger {index}");
+        }
         this.TriggerController.AddTrigger(trigger);
         this.SelectedTrigger = trigger;
         this.triggersViewMode = "edit";
@@ -974,7 +1029,28 @@ namespace FFXIV_Vibe_Plugin {
       if (ImGui.Button("Delete")) {
         this.triggersViewMode = "delete";
       }
-
+      ImGui.SameLine();
+      if (ImGui.Button("Import Triggers")) {
+        if (!this.ConfigurationProfile.EXPORT_DIR.Equals("")) {
+          try {
+            foreach (var filename in Directory.GetFiles(this.ConfigurationProfile.EXPORT_DIR)) {
+              Trigger t = JsonConvert.DeserializeObject<Trigger>(File.ReadAllText(filename));
+              // Remove any triggers with the same name due to .Equals override
+              this.TriggerController.RemoveTrigger(t);
+              // Import the new trigger
+              this.TriggerController.AddTrigger(t);
+            }
+          } catch { }
+        }
+      }
+      ImGui.SameLine();
+      if (ImGui.Button("Export All")) {
+        if (!this.ConfigurationProfile.EXPORT_DIR.Equals("")) {
+          foreach (Trigger t in this.TriggerController.GetTriggers()) {
+            export_trigger(t);
+          }
+        }
+      }
     }
 
     public void DrawPatternsTab() {
@@ -1119,6 +1195,22 @@ namespace FFXIV_Vibe_Plugin {
       this._tmp_void = "50:1000|100:2000";
       ImGui.InputText("###HELP_PATTERN_EXAMPLE", ref this._tmp_void, 50);
     }
-
+    public string export_trigger(Trigger trigger) {
+      if (this.ConfigurationProfile.EXPORT_DIR.Equals("")) {
+        return "No export directory has been set! Set one in Options.";
+      } else {
+        try {
+          File.WriteAllText(
+            Path.Join(this.ConfigurationProfile.EXPORT_DIR, $"{trigger.Name}.json"),
+            JsonConvert.SerializeObject(trigger, Formatting.Indented)
+          );
+          return "Successfully exported trigger!";
+        } catch {
+          return "Something went wrong while exporting!";
+        }
+      }
+    }
   }
+
+
 }

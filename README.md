@@ -29,6 +29,7 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - Custom patterns per motor (save, with easy import, export).
 - Vibe or trigger a pattern on HP Changed 
 - HP Changed can have custom min/max values or percentages
+- Export/Import triggers
 
 ## Prerequisites
 - [FFXIV QuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher).
@@ -64,7 +65,27 @@ not make a living from it.
 
 
 ## Build yourself
-You can build yourself, instructions are here: [Build yourself](./Docs/BUILD.md)
+You can build yourself, instructions are here: [Build yourself](./Docs/BUILD.md)o
+
+## Import triggers
+1. Start the game and make sure the plugin is working.
+2. On your computer, go to your `%userprofile%` folder (eg: C:\\Users\\<yourname>) folder.
+3. The go in the `FFXIV\_Vibe\_Plugin` folder (or create if it does not exists)
+4. Add the triggers file you want to import (eg: `MyTrigger.json`)
+5. In the plugin go to the `Triggers` tab and click on `Import Triggers` at the bottom. 
+
+That's it. It should load all of the triggers.
+Note: you can define a custom directory to read/write in the `Options` tab.
+
+## Export triggers
+1. On your computre, go to your `%userprofile%` folder (eg: C:\\Users\\<yourname>) folder.
+2. Go to the `FFXIV\_Vibe\_Plugin` folder (or create if it does not exists)
+3. In the plugin, go to the `Triggers` tab.
+4. Create your triggers (if they does not exist).
+5. Select the trigger you want to export and click on the `Export` button.
+
+That's it. You should see them in your userprofile directory.
+Note: you can define a custom directory to read/write in the `Options` tab.
 
 ## USB Dongle vs Lovense Dongle vs Other
 We recommend you to use a bluetooth dongle. Here is the one we are using: [TP-Link Nano USB Dongle Bluetooth 5.0](https://www.amazon.fr/gp/product/B09C25VRXD/ref=as_li_tl?ie=UTF8&camp=1642&creative=6746&creativeASIN=B09C25VRXD&linkCode=as2&tag=kaciexx-21&linkId=8b6c8c6e693ab549216c2dacad34e03b)
