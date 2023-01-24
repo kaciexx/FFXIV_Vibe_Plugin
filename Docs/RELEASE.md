@@ -12,4 +12,4 @@
 
 # Conventions
 
-Version: 1.7.0.0 refers to Dalamud API 7 
+Version: 1.8.0.0 refers to Dalamud API 8
