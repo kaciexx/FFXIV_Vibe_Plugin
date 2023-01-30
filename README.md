@@ -154,4 +154,11 @@ Be aware: this will overrides everything.
 Donation link: https://paypal.me/kaciedev  
 Please concider doing a small donation if you like this plugin. We worked a lot, gave a lots of free nights to design it, listening to everything people wanted and doing the implementation. 
 
-Thanks to: Maple (20$), May B (20$), Iris K (20$), PM (1.90$)
+Thanks to: 
+- Hooper (36$)
+- Victor (20.70$)
+- Maple (20$)
+- May B (20$)
+- Iris K (20$)
+- Morris (9.50$)
+- PM (1.90$)
