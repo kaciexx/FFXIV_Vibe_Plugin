@@ -69,26 +69,22 @@ namespace FFXIV_Vibe_Plugin {
 
       if (DalamudChat != null) {
         DalamudChat.ChatMessage += ChatWasTriggered;
-      }
+      } 
       this.Logger = new Logger(this.DalamudChat, ShortName, Logger.LogLevel.VERBOSE);
-      
+      if(DalamudChat == null) {
+        this.Logger.Error("DalamudChat was not initialized correctly.");
+      }
 
       // Migrations
       Migration migration = new(Configuration, Logger);
-      migration.Patch_0_2_0_to_1_0_0_config_profile();
-
-      
+      migration.Patch_0_2_0_to_1_0_0_config_profile();      
 
       // Configuration Profile
       this.ConfigurationProfile = this.Configuration.GetDefaultProfile();
 
-      
-
       // Patterns
       this.Patterns = new Patterns();
       this.Patterns.SetCustomPatterns(this.ConfigurationProfile.PatternList);
-
-
 
       // Initialize the devices Controller
       this.DeviceController = new Device.DevicesController(this.Logger, this.Configuration, this.ConfigurationProfile, this.Patterns);
@@ -100,13 +96,10 @@ namespace FFXIV_Vibe_Plugin {
         t.Start();
       }
       
-
-
       // Initialize Hook ActionEffect
       this.hook_ActionEffect = new(this.DataManager, this.Logger, this.Scanner, clientState, gameObjects);
       this.hook_ActionEffect.ReceivedEvent += SpellWasTriggered;
       
-
       // Init the login event.
       this.ClientState.Login += this.ClientState_LoginEvent;
 
@@ -115,7 +108,6 @@ namespace FFXIV_Vibe_Plugin {
       PlayerStats.Event_CurrentHpChanged += this.PlayerCurrentHPChanged;
       PlayerStats.Event_MaxHpChanged += this.PlayerCurrentHPChanged;
       
-
       // Triggers
       this.TriggersController = new Triggers.TriggersController(this.Logger, this.PlayerStats, this.ConfigurationProfile);
 
@@ -293,11 +285,12 @@ namespace FFXIV_Vibe_Plugin {
     }
 
     private void ChatWasTriggered(XivChatType chatType, uint senderId, ref SeString _sender, ref SeString _message, ref bool isHandled) {
+      string fromPlayerName = _sender.ToString();
       if (this.TriggersController == null) {
         this.Logger.Warn("ChatWasTriggered: TriggersController not init yet, ignoring chat...");
         return;
       }
-      string fromPlayerName = _sender.ToString();
+      
       if (this.ConfigurationProfile != null && this.ConfigurationProfile.VERBOSE_CHAT) {
         string XivChatTypeName = ((XivChatType)chatType).ToString();
         this.Logger.Debug($"VERBOSE_CHAT: {fromPlayerName} type={XivChatTypeName}: {_message}");

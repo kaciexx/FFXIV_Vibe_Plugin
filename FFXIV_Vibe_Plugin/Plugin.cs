@@ -35,7 +35,8 @@ namespace FFXIV_Vibe_Plugin {
         [RequiredVersion("1.0")] GameNetwork gameNetwork,
         [RequiredVersion("1.0")] SigScanner scanner,
         [RequiredVersion("1.0")] ObjectTable gameObjects,
-        [RequiredVersion("1.0")] DataManager dataManager
+        [RequiredVersion("1.0")] DataManager dataManager,
+        [RequiredVersion("1.0")] Dalamud.Game.Gui.ChatGui? dalamudChat
         ) {
       this.PluginInterface = pluginInterface;
       this.CommandManager = commandManager;
@@ -51,7 +52,7 @@ namespace FFXIV_Vibe_Plugin {
       this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
       // Init our own app
-      this.app = new FFXIV_Vibe_Plugin.App(this, CommandName, ShortName, gameNetwork, clientState, dataManager, DalamudChat, Configuration, scanner, gameObjects, pluginInterface);
+      this.app = new FFXIV_Vibe_Plugin.App(this, CommandName, ShortName, gameNetwork, clientState, dataManager, dalamudChat, Configuration, scanner, gameObjects, pluginInterface);
       
       // Setting the windows
       WindowSystem.AddWindow(this.app.PluginUi);
