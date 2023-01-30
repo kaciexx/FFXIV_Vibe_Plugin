@@ -154,6 +154,7 @@ Be aware: this will overrides everything.
 Donation link: 
 - [https://paypal.me/kaciedev](https://paypal.me/kaciedev)
 - [https://www.patreon.com/kaciexx](https://www.patreon.com/kaciexx)
+
 Please concider doing a small donation if you like this plugin. We worked a lot, gave a lots of free nights to design it, listening to everything people wanted and doing the implementation. 
 
 Thanks to: 
