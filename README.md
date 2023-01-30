@@ -1,6 +1,7 @@
 # FFXIV Vibe Plugin
 
 <img src="https://img.shields.io/github/downloads/kaciexx/FFXIV_Vibe_Plugin/total?label=Downloads" /> <img src="https://img.shields.io/discord/914941648859963503"/> <img src="https://img.shields.io/github/last-commit/kaciexx/FFXIV_Vibe_Plugin" />
+<a href="https://patreon.com/kaciexx"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dkaciexx%26type%3Dpatrons&style=flat" alt="Support me on Patreon" /></a>
 
 <p align="center">
   <img width="200" height="200" src="./images/icon.png" />
