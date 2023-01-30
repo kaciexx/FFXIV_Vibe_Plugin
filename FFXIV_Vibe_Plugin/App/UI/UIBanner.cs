@@ -11,7 +11,7 @@ using FFXIV_Vibe_Plugin.Device;
 
 namespace FFXIV_Vibe_Plugin.UI {
   internal class UIBanner {
-    public static void Draw(int frameCounter, Logger logger, ImGuiScene.TextureWrap image, String donationLink, DevicesController devicesController) {
+    public static void Draw(int frameCounter, Logger logger, ImGuiScene.TextureWrap image, String donationLink, String patreonLink, DevicesController devicesController) {
       ImGui.Columns(2, "###main_header", false);
       float logoScale = 0.2f;
       ImGui.SetColumnWidth(0, (int)(image.Width * logoScale + 20));
@@ -34,7 +34,12 @@ namespace FFXIV_Vibe_Plugin.UI {
       ImGui.Text($"{donationLink}");
       ImGui.SameLine();
       UI.Components.ButtonLink.Draw("Thanks for the donation ;)", donationLink, Dalamud.Interface.FontAwesomeIcon.Pray, logger);
+      ImGui.SameLine();
+      ImGui.Text($"{patreonLink}");
+      ImGui.SameLine();
+      UI.Components.ButtonLink.Draw("Thanks for the donation ;)", patreonLink, Dalamud.Interface.FontAwesomeIcon.HollyBerry, logger);
       
+
     }
   }
 }

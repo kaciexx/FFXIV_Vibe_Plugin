@@ -44,7 +44,8 @@ namespace FFXIV_Vibe_Plugin {
     // Patterns
     private readonly Patterns Patterns = new();
 
-    private readonly string DonationLink = "http://paypal.me/kaciedev";
+    private readonly string DonationLink = "https://paypal.me/kaciedev";
+    private readonly string PatreonLink = "https://www.patreon.com/kaciexx";
 
     private bool _expandedOnce = false;
     private readonly int WIDTH = 700;
@@ -162,7 +163,7 @@ namespace FFXIV_Vibe_Plugin {
 
       ImGui.Spacing();
 
-      FFXIV_Vibe_Plugin.UI.UIBanner.Draw(this.frameCounter, this.Logger, this.loadedImages["icon.png"], this.DonationLink, this.DevicesController);
+      FFXIV_Vibe_Plugin.UI.UIBanner.Draw(this.frameCounter, this.Logger, this.loadedImages["icon.png"], this.DonationLink, this.PatreonLink, this.DevicesController);
 
       // Back to on column
       ImGui.Columns(1);
