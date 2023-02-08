@@ -353,6 +353,9 @@ namespace FFXIV_Vibe_Plugin.Device {
           forceStop = true;
           this.SendCommand(command, device, 0, motorId);
           this.Logger.Debug($"Force stopping {deviceAndMotorId} because of StopAfter={StopAfter}");
+
+          // Make sure we clean the current playing trigger whgenever we're force stopping a trigger
+          this.CurrentPlayingTrigger = null;
         }
       });
       tStopAfter.Start();
@@ -394,9 +397,6 @@ namespace FFXIV_Vibe_Plugin.Device {
 
           Thread.Sleep(duration);
         }
-
-        // Make sure we clean the current playing trigger.
-        this.CurrentPlayingTrigger = null;
       });
       t.Start();
     }
