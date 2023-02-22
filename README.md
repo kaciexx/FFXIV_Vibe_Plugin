@@ -33,7 +33,7 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - HP Changed can have custom min/max values or percentages.
 - Priority system (lower priority number will be stopped).
 
-* Limited to 10 free triggers in the free version.
+\* Limited to 10 free triggers in the free version.
 
 ## Premium features
 - The number of triggers are unlimited.
