@@ -29,14 +29,14 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - Define global threshold or threshold per motor.
 - Displaying battery life of devices.
 - Custom patterns per motor (save, with easy import, export).
-- Vibe or trigger a pattern on HP Changed
-- HP Changed can have custom min/max values or percentages
-- Priority system (lower priority number will be stopped)
+- Vibe or trigger a pattern on HP Changed.
+- HP Changed can have custom min/max values or percentages.
+- Priority system (lower priority number will be stopped).
 
 ## Premium features
-- The number of triggers are unlimited
-- Create multiple profile
-- Export/Import triggers
+- The number of triggers are unlimited.
+- Create multiple profiles.
+- Export/Import triggers.
 
 ## How to obtain your premium token ?
 You need to register on Patreon
