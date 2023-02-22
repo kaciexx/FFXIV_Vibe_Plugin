@@ -1,6 +1,6 @@
 # FFXIV Vibe Plugin
 
-<img src="https://img.shields.io/discord/914941648859963503"/> <img src="https://img.shields.io/github/last-commit/kaciexx/FFXIV_Vibe_Plugin" />
+<img src="https://img.shields.io/github/downloads/kaciexx/FFXIV_Vibe_Plugin/total?label=Downloads" /> <img src="https://img.shields.io/discord/914941648859963503"/> <img src="https://img.shields.io/github/last-commit/kaciexx/FFXIV_Vibe_Plugin" />
 <a href="https://patreon.com/kaciexx"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dkaciexx%26type%3Dpatrons&style=flat" alt="Support me on Patreon" /></a>
 
 <p align="center">
@@ -20,6 +20,7 @@ A plugin for FFXIV that will let you vibe your controller or toys.
     - Custom spell type (damage, heal...).
     - Custom spell direction (outgoing, incoming, self).
     - Min and/or max dmg/heal values.
+    - Custom allowed characters.
 - Multiple devices per custom trigger.
 - UI to search through your triggers.
 - Delay start and stop patterns.
@@ -28,13 +29,21 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - Define global threshold or threshold per motor.
 - Displaying battery life of devices.
 - Custom patterns per motor (save, with easy import, export).
-- Vibe or trigger a pattern on HP Changed 
+- Vibe or trigger a pattern on HP Changed
 - HP Changed can have custom min/max values or percentages
+- Priority system (lower priority number will be stopped)
+
+## Premium features
+- The number of triggers are unlimited
+- Create multiple profile
 - Export/Import triggers
+
+## How to obtain your premium token ?
+You need to register on Patreon
 
 ## Prerequisites
 - [FFXIV QuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher).
-- [Intiface Desktop](https://github.com/intiface/intiface-desktop) (DON'T USE THE INTIFACE CENTRAL)
+- [Intiface Central](https://intiface.com/central/)
 
 
 ## Installation
@@ -42,14 +51,14 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 2. Under `Custom Plugin Repositories` add the following url `https://raw.githubusercontent.com/kaciexx/FFXIV_Vibe_Plugin/master/repo.json` and press the <kbd>+</kbd> icon.
 3. Press the `Save and close` button on the bottom left.
 
-Now you should be able to see `FFXIV Vibe Plugin`. Click install and enjoy. 
+Now you should be able to see `FFXIV Vibe Plugin`. Click install and enjoy.
 
 ## How to use
 1. Start `Intiface` and click on `Start Server`. Power on your device, make sure it is connected to Intiface.
 2. In the game. Type: `/fvp`. You should see the configuration panel.
 3. Press the `Connect` button.
 
-Well done ! 
+Well done !
 
 You have now FFXIV connected to Intiface. Now you can connect your device to Intiface and you
 should be able to use them with FFXIV Vibe Plugin.
@@ -59,12 +68,6 @@ should be able to use them with FFXIV Vibe Plugin.
 ## Our TODO
 Our current ideas and feedbacks are in: [TODO List](./Docs/TODO.md)
 
-A **profile selector (in game)** is scheduled to be developed. But since the
-begining of this project (28 Apr 2020), we have only reached a donation marker of
-20$. After so much effort, this plugin is not our priority anymore since we can
-not make a living from it.
-
-
 ## Build yourself
 You can build yourself, instructions are here: [Build yourself](./Docs/BUILD.md)o
 
@@ -73,7 +76,7 @@ You can build yourself, instructions are here: [Build yourself](./Docs/BUILD.md)
 2. On your computer, go to your `%userprofile%` folder (eg: C:\\Users\\<yourname>) folder.
 3. The go in the `FFXIV\_Vibe\_Plugin` folder (or create if it does not exists)
 4. Add the triggers file you want to import (eg: `MyTrigger.json`)
-5. In the plugin go to the `Triggers` tab and click on `Import Triggers` at the bottom. 
+5. In the plugin go to the `Triggers` tab and click on `Import Triggers` at the bottom.
 
 That's it. It should load all of the triggers.
 Note: you can define a custom directory to read/write in the `Options` tab.
@@ -93,7 +96,7 @@ We recommend you to use a bluetooth dongle. Here is the one we are using: [TP-Li
 
 ## Tested devices
 - Microsoft XBox Controller
-- Lovense (*please use bluetooth and not the lovense dongle*): 
+- Lovense (*please use bluetooth and not the lovense dongle*):
     Nora, Hush, Domi, Ferri, Diamo, Edge 2, Gush
 
 ## FAQ
@@ -117,15 +120,15 @@ This is not related to this plugin. You probably should not use Bluetooth.
 
 ### My Lovense Nora is not doing rotations
 Please stop using Lovense Dongle. Connect using the Lovense Connect or bluetooth. If you don't have bluetooth
-please buy a bluetooth 5.0 dongle on amazon for 20$. 
+please buy a bluetooth 5.0 dongle on amazon for 20$.
 
 ### The plugin does not connect to Intiface
-Please make sure you are doing it right. 
+Please make sure you are doing it right.
 Make sure you have the [intiface-desktop](https://github.com/intiface/intiface-desktop) and not the new Intiface Central.
 1. Open Intiface and click on the top right side **red** icon.
 2. Uncheck everything but not *WebSocket* and *Bluetooth*. WebSocket should have the following text: "on [All Interfaces]:12345"
 3. Click on Start Server (now you should have one *green* icon and one *red* icon on the top right side).
-4. Go to the plugin and click connect (you should have two *green* icons). 
+4. Go to the plugin and click connect (you should have two *green* icons).
 If this is not working: please try change the IP Address to 127.0.0.1 or your computer IP Address. Also make sure the port
 is 12345 or correspond to the one in Intiface.
 
@@ -143,22 +146,27 @@ If it works, then it's a trigger issue from one you have created. If not:
 If it works, then it probably a bluetooth issue. Nothing we can do about.
 
 ### How do I share my configuration
-You can copy/past the file located at: `%AppData%\XIVLauncher\pluginConfigs\FFXIV_Vibe_Plugin.json`.
-Be aware: this will overrides everything.
+You can use the import and export feature. It will drop the configuration as a file in the desired folder.
+
+### How does the priority system works ?
+So regards, the priority system:
+- **Trigger A** with priority 10 is triggered and played.
+- **Trigger B** with priority 20 is being triggered => **Trigger** A is stop because B has a higher priority.
+- **Trigger A** with priority 10 is retriggered => **Trigger A** is ignored because of lower priority, **Trigger B** continues to be played.
 
 
 # Discord
-- [This plugin discord](https://discord.gg/JnCGxa3gGa) 
+- [This plugin discord](https://discord.gg/JnCGxa3gGa)
 - [Ms. Tress #discussion](https://discord.gg/fx5pABsE)
 
 # Donation & Donors
-Donation link: 
+Donation link:
 - [https://paypal.me/kaciedev](https://paypal.me/kaciedev)
 - [https://www.patreon.com/kaciexx](https://www.patreon.com/kaciexx)
 
-Please concider doing a small donation if you like this plugin. We worked a lot, gave a lots of free nights to design it, listening to everything people wanted and doing the implementation. 
+Please concider doing a small donation if you like this plugin. We worked a lot, gave a lots of free nights to design it, listening to everything people wanted and doing the implementation.
 
-Thanks to: 
+Thanks to:
 - Hooper (36$)
 - Victor (20.70$)
 - Maple (20$)
