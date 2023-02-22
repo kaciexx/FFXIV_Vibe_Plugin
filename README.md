@@ -33,6 +33,8 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - HP Changed can have custom min/max values or percentages.
 - Priority system (lower priority number will be stopped).
 
+* Limited to 10 free triggers in the free version.
+
 ## Premium features
 - The number of triggers are unlimited.
 - Create multiple profiles.
@@ -100,6 +102,7 @@ We recommend you to use a bluetooth dongle. Here is the one we are using: [TP-Li
     Nora, Hush, Domi, Ferri, Diamo, Edge 2, Gush
 
 ## FAQ
+
 ### Troubleshooting
 Make sure you have the [intiface-desktop](https://github.com/intiface/intiface-desktop) and not the new Intiface Central.
 1. Make sure your toy is not connected to another device (eg: your phone, your browser...). Disable the bluetooth on your phone.
@@ -154,6 +157,9 @@ So regards, the priority system:
 - **Trigger B** with priority 20 is being triggered => **Trigger** A is stop because B has a higher priority.
 - **Trigger A** with priority 10 is retriggered => **Trigger A** is ignored because of lower priority, **Trigger B** continues to be played.
 
+# Terms of service
+
+[Terms of service](./TERMS.md)
 
 # Discord
 - [This plugin discord](https://discord.gg/JnCGxa3gGa)
