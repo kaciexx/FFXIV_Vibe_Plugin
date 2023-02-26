@@ -4,7 +4,7 @@
     "Name": "FFXIV Vibe Plugin",
     "Description": "Plugin that let you vibe your controller or toys",
     "InternalName": "FFXIV_Vibe_Plugin",
-    "AssemblyVersion": "2.0.0.1",
+    "AssemblyVersion": "2.0.0.2",
     "RepoUrl": "https://github.com/kaciexx/FFXIV_Vibe_Plugin",
     "ApplicableVersion": "any",
     "Tags": [
@@ -16,10 +16,10 @@
     "IconUrl": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/raw/master/images/icon.png",
     "IsHide": "False",
     "IsTestingExclusive": "False",
-    "LastUpdated": 1677162946,
-    "DownloadCount": 6661,
-    "DownloadLinkInstall": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.1/FFXIV_Vibe_Plugin_v2.0.0.1.zip",
-    "DownloadLinkTesting": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.1/FFXIV_Vibe_Plugin_v2.0.0.1.zip",
-    "DownloadLinkUpdate": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.1/FFXIV_Vibe_Plugin_v2.0.0.1.zip"
+    "LastUpdated": 1677437490,
+    "DownloadCount": 2231,
+    "DownloadLinkInstall": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.2/FFXIV_Vibe_Plugin_v2.0.0.2.zip",
+    "DownloadLinkTesting": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.2/FFXIV_Vibe_Plugin_v2.0.0.2.zip",
+    "DownloadLinkUpdate": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.0.0.2/FFXIV_Vibe_Plugin_v2.0.0.2.zip"
   }
 ]
