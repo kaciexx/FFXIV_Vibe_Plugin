@@ -45,7 +45,7 @@ You need to register on Patreon
 
 ## Prerequisites
 - [FFXIV QuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher).
-- [Intiface Central](https://intiface.com/central/)
+- [Intiface Central](https://intiface.com/central/) **NOT Intiface Desktop**
 
 
 ## Installation
@@ -56,7 +56,7 @@ You need to register on Patreon
 Now you should be able to see `FFXIV Vibe Plugin`. Click install and enjoy.
 
 ## How to use
-1. Start `Intiface` and click on `Start Server`. Power on your device, make sure it is connected to Intiface.
+1. Start `Intiface Central` and click on `Start Server` (top left button). Power on your device, make sure it is connected to Intiface.
 2. In the game. Type: `/fvp`. You should see the configuration panel.
 3. Press the `Connect` button.
 
@@ -69,9 +69,6 @@ should be able to use them with FFXIV Vibe Plugin.
 
 ## Our TODO
 Our current ideas and feedbacks are in: [TODO List](./Docs/TODO.md)
-
-## Build yourself
-You can build yourself, instructions are here: [Build yourself](./Docs/BUILD.md)o
 
 ## Import triggers
 1. Start the game and make sure the plugin is working.
