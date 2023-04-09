@@ -67,9 +67,6 @@ should be able to use them with FFXIV Vibe Plugin.
 
 ![ingame](./Docs/screenshot.png)
 
-## Our TODO
-Our current ideas and feedbacks are in: [TODO List](./Docs/TODO.md)
-
 ## Import triggers
 1. Start the game and make sure the plugin is working.
 2. On your computer, go to your `%userprofile%` folder (eg: C:\\Users\\<yourname>) folder.
@@ -97,6 +94,12 @@ We recommend you to use a bluetooth dongle. Here is the one we are using: [TP-Li
 - Microsoft XBox Controller
 - Lovense (*please use bluetooth and not the lovense dongle*):
     Nora, Hush, Domi, Ferri, Diamo, Edge 2, Gush
+
+## Trigger Packs
+You can find some unofficial trigger packs here: [Packs](./Packs/README.md)
+
+## Our TODO
+Our current ideas and feedbacks are in: [TODO List](./Docs/TODO.md)
 
 ## FAQ
 

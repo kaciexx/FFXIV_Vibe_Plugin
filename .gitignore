@@ -3,3 +3,4 @@ obj/
 bin/
 *.user
 *.swp
+sync.sh
