@@ -157,6 +157,17 @@ So regards, the priority system:
 - **Trigger B** with priority 20 is being triggered => **Trigger** A is stop because B has a higher priority.
 - **Trigger A** with priority 10 is retriggered => **Trigger A** is ignored because of lower priority, **Trigger B** continues to be played.
 
+### How to stop a pattern
+In this example, if you have a pattern that runs for 25 sec:
+- Create a new trigger called "Stop Action"
+- Define your trigger condition (Spell, chat, ...).
+- Add the device(s) you want to stop.
+- Set to Intensity and the value to zero for each motor you want to stop.
+
+When the stop trigger is triggered, it will stop your pattern.
+
+*NOTE: make sure the priority is equal or higher than the playing pattern*
+
 # Terms of service
 
 [Terms of service](./TERMS.md)
