@@ -167,7 +167,7 @@ In this example, if you have a pattern that runs for 25 sec:
 
 When the stop trigger is triggered, it will stop your pattern.
 
-*NOTE: make sure the priority is equal or higher than the playing pattern*
+**NOTE**: if the priority is higher, it won't let you play your patterns again. Unless the "Stop Action" trigger have a "stop after set".
 
 # Terms of service
 
