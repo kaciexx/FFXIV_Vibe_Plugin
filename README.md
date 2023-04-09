@@ -40,6 +40,9 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - Create multiple profiles.
 - Export/Import triggers.
 
+## Tutorials
+- [How to install and set your first trigger](https://www.youtube.com/watch?v=YYFzVQsC_kc)
+
 ## How to obtain your premium token ?
 You need to register on [Patreon](https://www.patreon.com/kaciexx). Once registered you will receive your token (~15min) by email.
 Then you will need to copy/paste the token in the first tab of the plugin.
