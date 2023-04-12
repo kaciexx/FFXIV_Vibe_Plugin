@@ -6,12 +6,12 @@ Then you will need to define the device that will be used for each triggers.
 ## Val pack
 
 **Description**:
-Trigger sets created by Vel. There are currently triggers for the following classes:
+Triggers pack created by Vel. There are currently general triggers and triggers for the following classes:
+
 - Dancer
 - Dark Knight
 - Dragoon
 - Red Mage
-- General
 
 The "General" class contains triggers that can be used across other classes, as they are triggers that responds to things Greetings, Teleporting, and Duty Pops. Feel free to mix and match to your liking whenever you import them. I'd highly recommend making profiles for each class (if you're part of the Premium Subscription).
 
@@ -21,4 +21,31 @@ The "General" class contains triggers that can be used across other classes, as 
 - 3) For each triggers imported, you'll need to set the devices manually.
 
 
-**DOWNLOAD**: [Val Pack](./20230409_Val_Pack.zip)
+Latest Update Date: 09/04/2023
+**DOWNLOAD**: [Val Pack](./Val_Pack.zip)
+
+
+
+## YN Vibe pack HEALERS
+**Description**
+Triggers pack created by YN VIBE MAN. There are currently triggers for the following professions:
+
+- Astrologian
+- White Mage
+- Sage
+-
+
+Latest Update Date: 09/04/2023
+**DOWNLOAD**: [YN Vibe Triggers](./YN_Vibe_Triggers.zip)
+
+## YN Vibe pack HEALERS
+**Description**
+Triggers pack created by YN VIBE MAN. There are currently triggers for the following healer professions:
+
+- White Mage
+- Red Mage
+- Astrologian
+- Sage
+
+Latest Update Date: 09/04/2023
+**DOWNLOAD**: [YN Vibe Triggers Healers](./YN_Vibe_Triggers_Healers.zip)
