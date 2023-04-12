@@ -26,7 +26,7 @@ The "General" class contains triggers that can be used across other classes, as 
 **DOWNLOAD**: [Val Pack](./Val_Pack.zip)
 
 
-## YN Vibe pack
+## YN Vibe pack (PATREON)
 **Description**
 Triggers pack created by YN VIBE MAN. There are currently triggers for the following professions:
 
@@ -38,9 +38,10 @@ Triggers pack created by YN VIBE MAN. There are currently triggers for the follo
 
 **DOWNLOAD**: [YN Vibe Triggers](./YN_Vibe_Triggers.zip)
 
-## YN Vibe pack HEALERS
+## YN Vibe pack (NON-PATREON)
 **Description**
-Triggers pack created by YN VIBE MAN. There are currently triggers for the following healer professions:
+Triggers pack created by YN VIBE MAN and has exactly 10 triggers to be used with the free version of FVP.
+There are currently triggers for the following professions:
 
 - White Mage
 - Red Mage
@@ -49,4 +50,4 @@ Triggers pack created by YN VIBE MAN. There are currently triggers for the follo
 
 *Latest Update Date: 09/04/2023*
 
-**DOWNLOAD**: [YN Vibe Triggers Healers](./YN_Vibe_Triggers_Healers.zip)
+**DOWNLOAD**: [YN Vibe Triggers FREE](./YN_Vibe_Triggers_Free.zip)
