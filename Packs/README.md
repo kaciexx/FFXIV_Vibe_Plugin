@@ -21,21 +21,21 @@ The "General" class contains triggers that can be used across other classes, as 
 - 3) For each triggers imported, you'll need to set the devices manually.
 
 
-Latest Update Date: 09/04/2023
+*Latest Update Date: 09/04/2023*
+
 **DOWNLOAD**: [Val Pack](./Val_Pack.zip)
 
 
-
-## YN Vibe pack HEALERS
+## YN Vibe pack
 **Description**
 Triggers pack created by YN VIBE MAN. There are currently triggers for the following professions:
 
 - Astrologian
 - White Mage
 - Sage
--
 
-Latest Update Date: 09/04/2023
+*Latest Update Date: 09/04/2023*
+
 **DOWNLOAD**: [YN Vibe Triggers](./YN_Vibe_Triggers.zip)
 
 ## YN Vibe pack HEALERS
@@ -47,5 +47,6 @@ Triggers pack created by YN VIBE MAN. There are currently triggers for the follo
 - Astrologian
 - Sage
 
-Latest Update Date: 09/04/2023
+*Latest Update Date: 09/04/2023*
+
 **DOWNLOAD**: [YN Vibe Triggers Healers](./YN_Vibe_Triggers_Healers.zip)
