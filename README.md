@@ -170,7 +170,28 @@ In this example, if you have a pattern that runs for 25 sec:
 
 When the stop trigger is triggered, it will stop your pattern.
 
-**NOTE**: if the priority is higher, it won't let you play your patterns again. Unless the "Stop Action" trigger have a "stop after set".
+**NOTE**: if the priority is higher, it won't let you play your patterns again.
+Unless the "Stop Action" trigger have a "stop after set".
+
+### Is it possible to vibe at the level of the HP
+As of today, it's not possible. However, you can create multiple triggers such
+as:
+- Trigger 1: HPChange 10-20%, Strength 20
+- Trigger 2: HPChange 21-30%, Strength 30
+- Trigger 3: HPChange 31-40%, Strength 40
+
+### Gathering trigger
+You can create gathering triggers. 
+- Create a trigger using the type: Chat
+    - Use the text: "You obtain a XXX" (replace XXX with the item)
+    - Use the regex: "You obtain a (.+?)\."
+
+Feel free to adapt it on your needs.
+
+### Steam Deck users
+If you are encountering network issues related to your plugins, you can set the
+winver back to Windows 7 from XIVLauncher's Wine settings tab by clicking the
+Wine Configuration box. This should fix your network and/or crash issue.
 
 # Terms of service
 
