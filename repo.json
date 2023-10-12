@@ -12,14 +12,14 @@
       "vibration",
       "wave"
     ],
-    "DalamudApiLevel": 8,
+    "DalamudApiLevel": 9,
     "IconUrl": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/raw/master/images/icon.png",
     "IsHide": "False",
     "IsTestingExclusive": "False",
-    "LastUpdated": 1697032672,
-    "DownloadCount": 10012,
-    "DownloadLinkInstall": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.3.0.0.zip",
-    "DownloadLinkTesting": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.3.0.0.zip",
-    "DownloadLinkUpdate": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.3.0.0.zip"
+    "LastUpdated": 1697093795,
+    "DownloadCount": 10103,
+    "DownloadLinkInstall": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.4.0.0.zip",
+    "DownloadLinkTesting": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.4.0.0.zip",
+    "DownloadLinkUpdate": "https://github.com/kaciexx/FFXIV_Vibe_Plugin/releases/download/v2.4.0.0/FFXIV_Vibe_Plugin_v2.4.0.0.zip"
   }
 ]
