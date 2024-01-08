@@ -32,6 +32,7 @@ A plugin for FFXIV that will let you vibe your controller or toys.
 - Vibe or trigger a pattern on HP Changed.
 - HP Changed can have custom min/max values or percentages.
 - Priority system (lower priority number will be stopped).
+- Triggers can be activated only if in or out of combat.
 
 \* Limited to 10 free triggers in the free version.
 
